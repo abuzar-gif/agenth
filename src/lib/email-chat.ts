@@ -8,6 +8,19 @@ function safeField(value:unknown){
   return String(value||'').replace(/[\r\n\t]+/g,' ').trim().slice(0,200);
 }
 
+export function gmailActionIntent(input:string){
+  const t=input.toLowerCase();
+  const mentions=/\b(gmail|e-?mail|inbox|mailbox|emails?|mails?)\b|(?:ای\s*میل|جی\s*میل|ان باکس)/i.test(t);
+  const actionable=/\b(check|show|open|read|search|find|fetch|list|latest|recent|new|send|write|draft|reply|forward|delete|archive|inbox|connect|connected|link|authorize|dekho|dikhao|dikha|bhejo|bhej|karo|kro|parho|khol|kholo)\b|(?:دیکھو|دکھاؤ|بھیجو|پڑھو|کھولو)/i.test(t);
+  return mentions&&actionable;
+}
+export function gmailNotConnectedReply(input:string,language='en'){
+  const roman=/\b(kya|kia|hai|mera|meri|mujhe|mujy|dikha|dekho|bata|bta|kr|kro|kar|nhi|yaar|khol|bhejo)\b/i.test(input);
+  const urdu=/[\u0600-\u06ff]/.test(input)||language==='ur';
+  if(urdu)return 'آپ کا Gmail ابھی کنیکٹ نہیں ہے۔ براہِ کرم پہلے AgentH میں Connected Apps کھول کر Gmail کنیکٹ کریں۔ اس کے بعد واپس آ کر مجھے یا Email Manager کو اپنا کام بتائیں۔ شکریہ!';
+  if(roman||language==='roman-ur')return 'Aapka Gmail abhi connected nahi hai. Kindly pehle AgentH ke Connected Apps mein ja kar Gmail connect karein. Phir wapas aa kar mujhe ya Email Manager ko apni command dein. Shukriya!';
+  return 'Your Gmail is not connected yet. Please open Connected Apps in AgentH and connect your Gmail first. Then come back and tell me, or Email Manager, what you would like to do. Thank you!';
+}
 function romanUrdu(input:string){
   return /\b(kia|kya|hai|mera|meri|mujhe|mujy|dikha|dekho|bata|bta|kr|kro|kar|nhi|yaar)\b/i.test(input);
 }

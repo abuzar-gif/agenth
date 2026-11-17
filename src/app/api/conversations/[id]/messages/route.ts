@@ -1,6 +1,6 @@
 import {languageInstruction} from '@/lib/language';
 import {integrationRegistry} from '@/lib/integrations';
-import {emailManagerReadOnlyReply} from '@/lib/email-chat';
+import {emailManagerReadOnlyReply,gmailActionIntent,gmailNotConnectedReply} from '@/lib/email-chat';
 import {api} from '@/lib/api';
 import {db} from '@/lib/db';
 import {streamModel} from '@/lib/model';
@@ -36,10 +36,12 @@ export const POST=(r:Request,{params}:{params:Promise<{id:string}>})=>api(r,asyn
     const send=(value:unknown)=>{if(!r.signal.aborted)controller.enqueue(encoder.encode(JSON.stringify(value)+'\n'));};
     try{
       send({type:'start',id:assistant.id});
-      const gmailReply=await emailManagerReadOnlyReply(userId,agentName,text);
+      const gmailRequested=gmailActionIntent(text);
+      const gmailConnection=gmailRequested?await db.connector.findUnique({where:{userId_provider:{userId,provider:'gmail'}},select:{id:true}}):null;
+      const gmailReply=gmailRequested&&!gmailConnection?gmailNotConnectedReply(text,profile?.language||'en'):await emailManagerReadOnlyReply(userId,agentName,text);
       if(gmailReply!==null){
         full=gmailReply;
-        modelName='gmail-api';
+        modelName=gmailRequested&&!gmailConnection?'connector-status':'gmail-api';
         send({type:'delta',text:full});
         send({type:'done',tokens:null,model:modelName});
       }else{

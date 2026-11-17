@@ -108,3 +108,17 @@
 .composer button.v2-call-start{display:inline-flex!important;align-items:center;justify-content:center;flex:0 0 43px;min-width:43px;width:43px;height:43px;min-height:43px;padding:0;border:0!important;border-radius:50%!important;background:#287cf5!important;color:#fff!important;box-shadow:0 5px 16px #287cf54d!important;opacity:1!important;visibility:visible!important}
 .composer button.v2-call-start svg{display:block!important;width:26px!important;height:26px!important;fill:none!important;stroke:#fff!important;stroke-width:2.3!important;opacity:1!important;visibility:visible!important}
 .composer button.v2-call-start:hover{background:#196ce4!important;transform:translateY(-1px)}
+
+/* Livelier, natural agent eyes: a short double blink, with reduced-motion support. */
+.bot .eyes{transition:transform 65ms ease-out}
+.bot .eye,.bot.hovering .eye{animation:agenthExpressiveBlink 2.65s infinite ease-in-out!important}
+.bot .eye:nth-child(2){animation-delay:.07s!important}
+@keyframes agenthExpressiveBlink{0%,13%,17%,23%,27%,100%{scale:1 1}15%,25%{scale:1 .07}}
+.v2-teach-task{width:100%;margin-bottom:9px;border:1px solid #ded0fb;border-radius:15px;padding:11px 12px;background:linear-gradient(125deg,#f6f0ff,#eef2ff);color:#4e3a87;display:flex;align-items:center;gap:10px;text-align:left}
+.v2-teach-task .v2-teach-icon{width:34px;height:34px;border-radius:11px;display:grid;place-items:center;background:#7055ca;color:#fff;font-size:21px;flex:none}
+.v2-teach-task span:nth-child(2){flex:1;min-width:0}.v2-teach-task strong{display:block;font-size:13px;font-weight:700}.v2-teach-task small{display:block;font-size:10px;color:#8273a4;margin-top:3px;line-height:1.35}
+.v2-teach-task:hover{background:#eee3ff;border-color:#b9a3ea}
+html[data-v2-theme="dark"] .v2-teach-task{background:#303044;color:#e9dfff;border-color:#594e80}
+html[data-v2-theme="dark"] .v2-teach-task small{color:#b5a8d1}
+@media(max-width:650px){.app.mobile-drawer-open .v2-teach-task{display:flex}.v2-teach-task{display:none}}
+@media(prefers-reduced-motion:reduce){.bot .eye,.bot.hovering .eye{animation:none!important}.bot .eyes{transition:none}}

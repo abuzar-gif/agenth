@@ -252,3 +252,37 @@ async function v2CallSpeak(message,session){
   if(v2Call.open&&session===v2Call.session){v2CallPhase('idle','Ready for your next question.');if(!v2Call.muted)void v2CallListen();}
  }catch(error){if(v2Call.open&&session===v2Call.session)v2CallPhase('error',(error.message||'Speech playback unavailable')+' — tap microphone to continue.');}
 }
+
+// Responsive eye tracking: small cursor motions are visibly reflected without jitter.
+wireAvatars=function(){
+ document.querySelectorAll('.bot').forEach(el=>{
+  el.onmouseenter=()=>el.classList.add('hovering');
+  el.onpointermove=e=>{
+   if(e.pointerType==='touch')return;
+   const r=el.getBoundingClientRect();
+   const x=(e.clientX-r.left-r.width/2)/(r.width/2),y=(e.clientY-r.top-r.height/2)/(r.height/2);
+   el.style.setProperty('--ex',(Math.max(-1,Math.min(1,x*1.7))*10).toFixed(1)+'px');
+   el.style.setProperty('--ey',(Math.max(-1,Math.min(1,y*1.7))*8).toFixed(1)+'px');
+  };
+  el.onpointerleave=()=>{el.classList.remove('hovering');el.style.setProperty('--ex','0px');el.style.setProperty('--ey','0px')};
+ });
+};
+function v2TeachTask(){
+ window.top.location.assign('/dashboard?tab=browser');
+}
+const v2PrevDecorate=v2MobileDecorate;
+v2MobileDecorate=function(){
+ v2PrevDecorate();
+ const side=document.querySelector('.side');
+ if(!side)return;
+ const bottom=side.querySelector('.bottom');
+ if(bottom&&!bottom.querySelector('.v2-teach-task')){
+  const button=document.createElement('button');
+  button.type='button';button.className='v2-teach-task';
+  button.innerHTML='<span class="v2-teach-icon" aria-hidden="true">✦</span><span><strong>Teach a task</strong><small>Record browser actions & save a skill</small></span><span aria-hidden="true">›</span>';
+  button.title='Teach AgentH a browser task';
+  button.onclick=v2TeachTask;
+  bottom.prepend(button);
+ }
+};
+v2MobileDecorate();
