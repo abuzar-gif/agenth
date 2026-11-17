@@ -1,0 +1,45 @@
+services:
+  postgres:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_USER: agenth
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD}
+      POSTGRES_DB: agenth
+    ports: ["127.0.0.1:5432:5432"]
+    volumes: ["pgdata:/var/lib/postgresql/data"]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U agenth"]
+      interval: 5s
+      retries: 10
+    restart: unless-stopped
+  web:
+    build: .
+    env_file: .env
+    environment:
+      DATABASE_URL: postgresql://agenth:${POSTGRES_PASSWORD}@127.0.0.1:5432/agenth
+      OLLAMA_URL: http://localhost:11434
+      LOCAL_SPEECH_URL: http://localhost:8001
+      AGENTH_RUNTIME_DIR: /app/.runtime
+    network_mode: host
+    volumes: ["runtime:/app/.runtime"]
+    depends_on:
+      postgres: {condition: service_healthy}
+    command: ["sh", "-c", "npm run db:migrate && npm run start"]
+    restart: unless-stopped
+  worker:
+    build: .
+    network_mode: host
+    env_file: .env
+    environment:
+      DATABASE_URL: postgresql://agenth:${POSTGRES_PASSWORD}@127.0.0.1:5432/agenth
+      OLLAMA_URL: http://localhost:11434
+      LOCAL_SPEECH_URL: http://localhost:8001
+      AGENTH_RUNTIME_DIR: /app/.runtime
+    volumes: ["runtime:/app/.runtime"]
+    depends_on:
+      postgres: {condition: service_healthy}
+    command: ["npm", "run", "worker:start"]
+    restart: unless-stopped
+volumes:
+  pgdata:
+  runtime:

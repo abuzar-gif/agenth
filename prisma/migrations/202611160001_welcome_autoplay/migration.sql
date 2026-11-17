@@ -1,0 +1,1 @@
+ALTER TABLE "Settings" ADD COLUMN "welcomeAutoplay" BOOLEAN NOT NULL DEFAULT true;

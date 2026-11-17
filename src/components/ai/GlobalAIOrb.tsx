@@ -1,0 +1,9 @@
+'use client';
+import {useEffect,useRef,type CSSProperties} from 'react';
+import {useOrbState} from '@/hooks/useOrbState';
+import type {OrbState} from './OrbProvider';
+export default function GlobalAIOrb({size=180,state,showStatus=false,className='',variant='logo'}:{size?:number;state?:OrbState;showStatus?:boolean;className?:string;variant?:'logo'|'eyes'}){
+ const orb=useOrbState(),video=useRef<HTMLVideoElement>(null);const active=state||orb.state;const amplitude=['speaking','listening'].includes(active)?orb.amplitude:0;
+ useEffect(()=>{const v=video.current;if(!v)return;let visible=false;const motion=matchMedia('(prefers-reduced-motion: reduce)');const update=()=>{if(!visible||motion.matches||document.hidden)v.pause();else void v.play().catch(()=>{});};const observer=new IntersectionObserver(entries=>{visible=Boolean(entries[0]?.isIntersecting);update();});observer.observe(v);motion.addEventListener('change',update);document.addEventListener('visibilitychange',update);update();return()=>{observer.disconnect();motion.removeEventListener('change',update);document.removeEventListener('visibilitychange',update);};},[active]);
+ return <div suppressHydrationWarning className={`orb-container video-orb ${className}`} style={{'--orb-size':`${size}px`,'--audio-level':amplitude} as CSSProperties} data-state={active} data-variant={variant}><div suppressHydrationWarning className="ai-orb" role="img" aria-label={`AgentH AI orb: ${active}`}><video ref={video} src={`/media/${variant}-orb.mp4`} poster={`/media/${variant}-orb.png`} muted loop playsInline preload={size<50?'none':'metadata'} aria-hidden="true" tabIndex={-1}/></div>{size>=90&&<span className="orb-signature">{variant==='eyes'?'YOUR INTELLIGENCE, IN MOTION':'AGENTH · INTELLIGENCE WITH PRESENCE'}</span>}{showStatus&&<span className="orb-status" role="status">{orb.detail||active.replace(/^./,c=>c.toUpperCase())}</span>}</div>;
+}

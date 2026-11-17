@@ -1,0 +1,17 @@
+import 'dotenv/config';
+import EmbeddedPostgres from 'embedded-postgres';
+import {existsSync} from 'node:fs';
+const url=new URL(process.env.DATABASE_URL);
+if(!['localhost','127.0.0.1'].includes(url.hostname))throw new Error('Portable database is local only.');
+const pg=new EmbeddedPostgres({databaseDir:'.runtime/postgres',user:decodeURIComponent(url.username),password:decodeURIComponent(url.password),port:Number(url.port)||5432,persistent:true,authMethod:'scram-sha-256',autoRehydrateSymlinks:true,initdbFlags:['--encoding=UTF8','--auth-host=scram-sha-256','--auth-local=scram-sha-256'],postgresFlags:['-h','127.0.0.1']});
+if(!existsSync('.runtime/postgres/PG_VERSION'))await pg.initialise();
+await pg.start();
+const databaseName=url.pathname.slice(1);if(!/^[a-zA-Z0-9_]+$/.test(databaseName))throw new Error('Use a simple local database name.');
+const client=pg.getPgClient('postgres','127.0.0.1');await client.connect();
+const existing=await client.query('SELECT datname FROM pg_database WHERE datname=$1',[databaseName]);
+if(!existing.rowCount)await client.query(`CREATE DATABASE "${databaseName}" ENCODING 'UTF8' TEMPLATE template0 LC_COLLATE 'C' LC_CTYPE 'C'`);
+await client.end();
+console.log('Local PostgreSQL is running on loopback. Keep this terminal open.');
+const shutdown=async()=>{await pg.stop();process.exit(0);};
+process.on('SIGINT',shutdown);process.on('SIGTERM',shutdown);
+setInterval(()=>{},60000);

@@ -1,0 +1,16 @@
+import {describe,it,expect,vi,beforeEach,afterEach} from 'vitest';
+const database=vi.hoisted(()=>({connector:{findUnique:vi.fn(),update:vi.fn()},message:{findMany:vi.fn()},schedule:{create:vi.fn()}}));
+vi.mock('../src/lib/db',()=>({db:database}));
+// Provider transport tests; scope/idempotency are verified separately.
+vi.mock('../src/lib/whatsapp-agent',()=>({assertWhatsAppAgent:vi.fn().mockResolvedValue({id:'wa',provider:'whatsapp-business'}),outgoingOnce:async(_u:string,_o:string,_p:unknown,send:()=>Promise<unknown>)=>send()}));
+import {encrypt} from '../src/lib/security';
+import {executeTool} from '../src/lib/tools';
+beforeEach(()=>vi.clearAllMocks());afterEach(()=>vi.unstubAllGlobals());
+describe('credential-gated connectors',()=>{
+  it('fails honestly when Gmail is disconnected',async()=>{database.connector.findUnique.mockResolvedValue(null);await expect(executeTool('u','gmail.search',{query:'teacher'})).rejects.toThrow('Connect gmail');});
+  it('calls the official Gmail search endpoint with user credentials',async()=>{database.connector.findUnique.mockResolvedValue({encrypted:encrypt({access_token:'test-token'})});const fn=vi.fn().mockResolvedValue(Response.json({messages:[{id:'m1'}]}));vi.stubGlobal('fetch',fn);expect(await executeTool('u','gmail.search',{query:'from:teacher@example.com'})).toEqual({messages:[{id:'m1'}]});expect(fn.mock.calls[0][0]).toContain('gmail.googleapis.com');expect(fn.mock.calls[0][1].headers.Authorization).toBe('Bearer test-token');});
+  it('propagates Gmail provider failures',async()=>{database.connector.findUnique.mockResolvedValue({encrypted:encrypt({access_token:'test-token'})});vi.stubGlobal('fetch',vi.fn().mockResolvedValue(new Response('scope denied',{status:403})));await expect(executeTool('u','gmail.read',{id:'m1'})).rejects.toThrow('403');});
+  it('calls official WhatsApp API and never fabricates success',async()=>{database.connector.findUnique.mockResolvedValue({id:'c',metadata:{health:'verified',consent:{send:true,chats:true,incoming:true}},encrypted:encrypt({phoneNumberId:'123',token:'test'})});const fn=vi.fn().mockResolvedValue(Response.json({error:{message:'Not authorized'}},{status:401}));vi.stubGlobal('fetch',fn);await expect(executeTool('u','whatsapp.send',{to:'923001234567',text:'Hi'})).rejects.toThrow('provider rejected');expect(fn.mock.calls[0][0]).toContain('graph.facebook.com');});
+  it('isolates stored WhatsApp messages by user',async()=>{database.connector.findUnique.mockResolvedValue({metadata:{consent:{chats:true,incoming:true}}});database.message.findMany.mockResolvedValue([]);await executeTool('owner','whatsapp.messages',{search:'hello'});expect(database.message.findMany.mock.calls[0][0].where.userId).toBe('owner');});
+  it('validates future schedules and Pakistan time zone',async()=>{database.schedule.create.mockImplementation(async({data}:any)=>data);const at=new Date(Date.now()+3600000).toISOString();const schedule=await executeTool('owner','schedule',{instruction:'Research',at,cron:'0 9 * * *',timezone:'Asia/Karachi'});expect(schedule.userId).toBe('owner');await expect(executeTool('owner','schedule',{instruction:'Research',at:'2020-01-01T00:00:00Z'})).rejects.toThrow('future');});
+});

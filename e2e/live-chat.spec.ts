@@ -1,0 +1,14 @@
+import {test,expect} from './fixtures';
+test('real local Qwen3 streaming chat, saved history and stop generation',async({page})=>{
+  test.skip(process.env.RUN_LIVE_AI!=='1','Requires the installed local Qwen3 model.');test.setTimeout(300000);const origin='http://localhost:3000',email=`live-chat-${Date.now()}@example.test`,password='Live-Qwen3-test-password-8292';
+  expect((await page.request.post('/api/register',{headers:{origin},data:{email,password,name:'Live QA'}})).ok()).toBe(true);await page.goto('/login');await page.getByLabel('Email',{exact:true}).fill(email);await page.getByLabel('Password',{exact:true}).fill(password);await page.getByRole('button',{name:'Log in →',exact:true}).click();await expect(page).toHaveURL(/welcome/,{timeout:60000});
+  await page.request.put('/api/profile',{headers:{origin},data:{language:'roman-ur',timezone:'Asia/Karachi',answers:{name:'Live QA'},onboarded:true,onboardingStep:10}});
+  try{
+    const created=await (await page.request.post('/api/conversations',{headers:{origin},data:{title:'Live Qwen3 API test'}})).json();const response=await page.request.post(`/api/conversations/${created.id}/messages`,{headers:{origin},data:{text:'Roman Urdu mein aik chhota jumla: aap meri kis tarah madad kar sakte hain?'},timeout:180000});expect(response.status()).toBe(200);
+    const chunks=(await response.text()).trim().split('\n').map(s=>JSON.parse(s));expect(chunks.some(c=>c.type==='error')).toBe(false);const result=chunks.filter(c=>c.type==='delta').map(c=>c.text).join('');expect(result.length).toBeGreaterThan(10);expect(result).toMatch(/\b(aap|main|madad|hoon|hain|sakta|aapki|kar)\b/i);expect(result).not.toMatch(/[\u0600-\u06ff\u0900-\u097f]/);expect(chunks.find(c=>c.type==='done')?.model).toBe('qwen3:4b-instruct');
+    const saved=await (await page.request.get(`/api/conversations/${created.id}`)).json();expect(saved.messages.find((m:any)=>m.role==='assistant').content).toBe(result);
+    await page.goto('/dashboard');await page.getByRole('button',{name:/Live Qwen3 API test/}).first().click();await expect(page.locator('.chat-bubble.assistant')).toContainText(result);
+    await page.getByLabel('Message AgentH',{exact:true}).fill('Write a long detailed guide with 20 paragraphs about organizing study notes.');await page.getByRole('button',{name:'Send ↑',exact:true}).click();await expect.poll(async()=>page.locator('.chat-bubble.assistant').last().locator('.message-text').innerText(),{timeout:180000}).not.toBe('Preparing response…');await page.getByRole('button',{name:'Stop generation',exact:true}).click();
+    await expect.poll(async()=>{const data=await (await page.request.get(`/api/conversations/${created.id}`)).json();return data.messages.filter((m:any)=>m.role==='assistant').at(-1)?.status;},{timeout:30000}).toBe('stopped');
+  }finally{await page.request.delete('/api/account',{headers:{origin},data:{confirmation:'DELETE MY ACCOUNT'}});}
+});

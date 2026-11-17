@@ -1,0 +1,27 @@
+const { chromium } = require('playwright');
+(async ()=>{
+ const browser=await chromium.launch({headless:true});
+ const page=await browser.newPage({viewport:{width:1440,height:900}});
+ const errors=[],requests=[];
+ page.on('pageerror', e=>errors.push(e.message));
+ page.on('response', r=>{if(/\/(api\/auth|api\/register|login|dashboard)/.test(r.url()))requests.push([r.status(),r.url()])});
+ await page.goto('http://127.0.0.1:3000/login',{waitUntil:'domcontentloaded'});
+ await page.waitForTimeout(1200);
+ console.log('LOGIN URL',page.url(),'heading',await page.locator('h1').allTextContents());
+ console.log('LOGIN inputs',await page.locator('input').evaluateAll(a=>a.map(e=>({name:e.name,type:e.type,placeholder:e.placeholder,disabled:e.disabled}))));
+ const link=page.getByRole('link',{name:'Create an account'});
+ console.log('signup link count',await link.count());
+ await link.click();
+ await page.waitForTimeout(600);
+ console.log('AFTER SWITCH URL',page.url(),'heading',await page.locator('h1').allTextContents());
+ console.log('AFTER SWITCH name inputs',await page.locator('input').count());
+ const providers=await page.request.get('http://127.0.0.1:3000/api/auth/providers');
+ console.log('PROVIDERS',providers.status(),(await providers.text()).slice(0,1600));
+ const session=await page.request.get('http://127.0.0.1:3000/api/auth/session');
+ console.log('SESSION',session.status(),(await session.text()).slice(0,800));
+ const invalid=await page.request.post('http://127.0.0.1:3000/api/register',{data:{email:'invalid',name:'Test',password:'ab'.repeat(6)},headers:{origin:'http://127.0.0.1:3000'}});
+ console.log('REGISTER INVALID',invalid.status(),(await invalid.text()).slice(0,400));
+ console.log('PAGE ERRORS',errors);
+ console.log('NETWORK',requests);
+ await browser.close();
+})().catch(e=>{console.error(e);process.exit(1)});

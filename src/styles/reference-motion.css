@@ -1,0 +1,23 @@
+/* Calm, staged motion inspired by the supplied product recording. */
+@media (prefers-reduced-motion:no-preference){
+  .reference-hero>*{opacity:0;animation:reference-rise .68s cubic-bezier(.22,.8,.24,1) forwards}
+  .reference-hero .online-pill{animation-delay:.04s}
+  .reference-hero h1{animation-delay:.12s}
+  .reference-hero p{animation-delay:.2s}
+  .reference-hero .reference-actions{animation-delay:.28s}
+  .reference-hero .reference-disclaimer{animation-delay:.34s}
+  .landing-workspace-demo{opacity:0;transform:translateY(22px);animation:reference-rise .72s .38s cubic-bezier(.22,.8,.24,1) forwards,reference-float 7s 1.2s ease-in-out infinite}
+  .action-marquee span{animation:reference-marquee 28s linear infinite}
+  .agent-card-scene:after{content:'';position:absolute;inset:0;pointer-events:none;background:linear-gradient(115deg,transparent 33%,#fff2 49%,transparent 65%);transform:translateX(-120%);animation:reference-sheen 7s ease-in-out infinite}
+  .reference-agent-card:nth-child(2) .agent-card-scene:after{animation-delay:1.2s}
+  .reference-agent-card:nth-child(3) .agent-card-scene:after{animation-delay:2.4s}
+  .reference-agent-card:nth-child(4) .agent-card-scene:after{animation-delay:3.6s}
+  .reference-agent-card:nth-child(5) .agent-card-scene:after{animation-delay:4.8s}
+  .reference-agent-card:nth-child(6) .agent-card-scene:after{animation-delay:6s}
+  .demo-activity p i{animation:reference-pulse 1.9s ease-in-out infinite}
+}
+@keyframes reference-rise{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:translateY(0)}}
+@keyframes reference-float{0%,100%{transform:translateY(0)}50%{transform:translateY(-7px)}}
+@keyframes reference-marquee{from{transform:translateX(0)}to{transform:translateX(-100%)}}
+@keyframes reference-sheen{0%,72%{transform:translateX(-120%)}88%,100%{transform:translateX(130%)}}
+@keyframes reference-pulse{0%,100%{opacity:.55;transform:scale(.8)}50%{opacity:1;transform:scale(1.18)}}

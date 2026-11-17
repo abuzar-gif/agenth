@@ -1,0 +1,6 @@
+import {z} from 'zod';
+import {db} from '@/lib/db';
+import {sameOrigin,rateLimit} from '@/lib/security';
+import {createHash,randomBytes} from 'node:crypto';
+import nodemailer from 'nodemailer';
+export async function POST(r:Request){try{sameOrigin(r);rateLimit('password-reset',10);const {email}=z.object({email:z.email()}).parse(await r.json());if(!process.env.EMAIL_SERVER)return Response.json({error:'Password recovery needs a configured SMTP server. Contact the app owner.'},{status:503});const user=await db.user.findUnique({where:{email:email.toLowerCase()}});if(user?.passwordHash){const raw=randomBytes(32).toString('hex'),token=createHash('sha256').update(raw).digest('hex');await db.verificationToken.create({data:{identifier:`reset:${user.email}`,token,expires:new Date(Date.now()+15*60000)}});const url=`${process.env.APP_URL}/reset-password?token=${raw}`;await nodemailer.createTransport(process.env.EMAIL_SERVER).sendMail({from:process.env.EMAIL_FROM,to:user.email,subject:'Reset your AgentH password',text:`You requested a password reset. This link expires in 15 minutes:\n${url}\nIf you did not request this, ignore the message.`});}return Response.json({ok:true,message:'If this address has a password account, a reset link has been sent.'});}catch{return Response.json({error:'Could not request recovery. Check the address and try later.'},{status:400});}}

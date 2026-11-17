@@ -1,0 +1,16 @@
+import {describe,it,expect,vi,beforeEach} from 'vitest';
+const mocks=vi.hoisted(()=>({task:{updateMany:vi.fn(),findUniqueOrThrow:vi.fn(),update:vi.fn()},event:{create:vi.fn(),findMany:vi.fn()},profile:{findUnique:vi.fn()},agent:{findMany:vi.fn()},execute:vi.fn(),makePlan:vi.fn(),model:vi.fn()}));
+vi.mock('../src/lib/db',()=>({db:{task:mocks.task,event:mocks.event,profile:mocks.profile,agent:mocks.agent}}));
+vi.mock('../src/lib/model',()=>({makePlan:mocks.makePlan,model:mocks.model}));
+vi.mock('../src/lib/tools',async importOriginal=>({...await importOriginal<object>(),executeTool:mocks.execute}));
+import {runTask} from '../src/lib/engine';
+const task=(step:any,status='queued')=>({id:'t',userId:'u',instruction:'Work',status,cursor:0,plan:{summary:'Plan',steps:[step]},approval:null});
+beforeEach(()=>{vi.clearAllMocks();mocks.task.updateMany.mockResolvedValue({count:1});mocks.task.update.mockResolvedValue({});mocks.event.create.mockResolvedValue({});mocks.agent.findMany.mockResolvedValue([]);mocks.event.findMany.mockResolvedValue([]);mocks.model.mockRejectedValue(new Error('offline'));});
+describe('execution and approvals',()=>{
+  it('does not execute an unapproved send',async()=>{mocks.task.findUniqueOrThrow.mockResolvedValue(task({agent:'Gmail Agent',tool:'gmail.send',args:{to:'teacher@example.com',subject:'Hello',body:'Hi'},reason:'Email'}));await runTask('t');expect(mocks.execute).not.toHaveBeenCalled();expect(mocks.task.update.mock.calls.some(c=>c[0].data.status==='waiting_approval')).toBe(true);});
+  it('does not claim tasks that another worker owns',async()=>{mocks.task.updateMany.mockResolvedValue({count:0});await runTask('t');expect(mocks.task.findUniqueOrThrow).not.toHaveBeenCalled();});
+  it('rejects specialist permission escalation',async()=>{mocks.task.findUniqueOrThrow.mockResolvedValue(task({agent:'Reporter',tool:'gmail.send',args:{to:'a@b.com',subject:'Hi',body:'Hi'},reason:'Bad'}));await runTask('t');expect(mocks.execute).not.toHaveBeenCalled();expect(mocks.event.create.mock.calls.some(c=>c[0].data.message.includes('permission'))).toBe(true);});
+  it('respects cancellation before the next tool',async()=>{const t=task({agent:'Reporter',tool:'report',args:{text:'Hi'},reason:'Answer'});mocks.task.findUniqueOrThrow.mockResolvedValueOnce(t).mockResolvedValue({...t,status:'cancelled'});await runTask('t');expect(mocks.execute).not.toHaveBeenCalled();});
+  it('retries a failed read once then records failure',async()=>{mocks.task.findUniqueOrThrow.mockResolvedValue(task({agent:'Gmail Agent',tool:'gmail.search',args:{query:'teacher'},reason:'Read'}));mocks.execute.mockRejectedValue(new Error('offline'));await runTask('t');expect(mocks.execute).toHaveBeenCalledTimes(2);expect(mocks.event.create.mock.calls.some(c=>c[0].data.kind==='failed')).toBe(true);});
+  it('never automatically retries a possibly completed mutation',async()=>{const t=task({agent:'Gmail Agent',tool:'gmail.send',args:{to:'a@b.com',subject:'Hi',body:'Hi'},reason:'Send'});Object.assign(t,{approval:{index:0,approved:true}});mocks.task.findUniqueOrThrow.mockResolvedValue(t);mocks.execute.mockRejectedValue(new Error('timeout'));await runTask('t');expect(mocks.execute).toHaveBeenCalledTimes(1);});
+});

@@ -1,0 +1,4 @@
+'use client';
+import {useEffect,useRef} from 'react';
+import {useOrbState} from '@/hooks/useOrbState';
+export default function OrbTaskMonitor({tasks}:{tasks:{id:string;status:string;error?:string}[]}){const previous=useRef<Record<string,string>>({}),{setActivity}=useOrbState();useEffect(()=>{const terminal=tasks.find(t=>previous.current[t.id]&&previous.current[t.id]!==t.status&&['completed','failed'].includes(t.status));previous.current=Object.fromEntries(tasks.map(t=>[t.id,t.status]));if(!terminal)return;setActivity('task-result',terminal.status==='completed'?'success':'error',terminal.status==='completed'?'Task completed with recorded tool results':terminal.error||'Task failed. Check its activity log.');const timer=setTimeout(()=>setActivity('task-result',null),terminal.status==='completed'?2200:6000);return()=>{clearTimeout(timer);setActivity('task-result',null);};},[tasks,setActivity]);return null;}

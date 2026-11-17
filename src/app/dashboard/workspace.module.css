@@ -1,0 +1,1504 @@
+:global(.premium-workspace).referenceShell {
+  --sidebar-width: 367px;
+  display: grid;
+  grid-template-columns: var(--sidebar-width) minmax(0, 1fr);
+  height: 100vh;
+  min-height: 100vh;
+  max-height: 100vh;
+  overflow: hidden;
+  border-top: 5px solid #30273c;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 14px;
+}
+
+:global(.premium-workspace.theme-light).referenceShell {
+  --app-bg: #fff;
+  --sidebar-bg: #f8f8f8;
+  --surface: #fff;
+  --surface-raised: #fff;
+  --surface-hover: #f4f4f2;
+  --surface-active: #f1f1ef;
+  --border: #e8e8e5;
+  --border-strong: #d7d7d2;
+  --text: #171715;
+  --text-secondary: #53534e;
+  --text-muted: #85857e;
+  --accent: #191918;
+  --accent-strong: #191918;
+  --accent-ink: #fff;
+  --success: #21865b;
+  --warning: #9c690c;
+  --danger: #be394d;
+  --info: #426db1;
+  --shadow: 0 16px 42px rgb(22 22 18 / 0.1);
+  background: var(--app-bg);
+}
+
+:global(.premium-workspace.theme-dark).referenceShell {
+  --app-bg: #171715;
+  --sidebar-bg: #1d1d1b;
+  --surface: #242422;
+  --surface-raised: #2b2b29;
+  --surface-hover: #30302d;
+  --surface-active: #343431;
+  --border: #363633;
+  --border-strong: #4a4a46;
+  --text: #f4f4f0;
+  --text-secondary: #d0d0ca;
+  --text-muted: #a0a098;
+  --accent: #f4f4f0;
+  --accent-strong: #f4f4f0;
+  --accent-ink: #171715;
+  --shadow: 0 16px 42px rgb(0 0 0 / 0.3);
+  background: var(--app-bg);
+}
+
+.referenceShell :global(.premium-sidebar) {
+  position: sticky;
+  z-index: 25;
+  width: var(--sidebar-width) !important;
+  min-width: var(--sidebar-width);
+  gap: 0;
+  padding: 0;
+  overflow: visible;
+  transform: none;
+  box-shadow: none;
+  border-right-color: #ededed;
+  background: var(--sidebar-bg);
+}
+
+.referenceShell :global(.mobile-navigation-trigger),
+.referenceShell :global(.mobile-navigation-backdrop) {
+  display: none !important;
+}
+
+.referenceShell :global(.premium-main) {
+  background: var(--app-bg);
+}
+
+.referenceShell :global(.ref-profile) {
+  position: relative;
+  display: flex;
+  flex: 0 0 auto;
+  align-items: center;
+  gap: 12px;
+  height: 90px;
+  min-height: 90px;
+  padding: 17px;
+}
+
+.referenceShell :global(.ref-profile-details) {
+  display: flex;
+  flex: 1;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 9px;
+  color: var(--text);
+  background: transparent;
+  text-align: left;
+  cursor: pointer;
+}
+
+.referenceShell :global(.ref-profile-details:hover),
+.referenceShell :global(.ref-profile > .icon-button:hover) {
+  background: var(--surface-hover);
+}
+
+.referenceShell :global(.ref-profile-initial) {
+  display: grid;
+  flex: 0 0 auto;
+  place-items: center;
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  color: #fff;
+  background: #f27b00;
+  font-size: 23px;
+  font-weight: 400;
+}
+
+.referenceShell :global(.ref-profile-details > span:last-child) {
+  display: grid;
+  min-width: 0;
+  gap: 2px;
+}
+
+.referenceShell :global(.ref-profile-details strong),
+.referenceShell :global(.ref-profile-details small) {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.referenceShell :global(.ref-profile-details strong) {
+  font-size: 20px;
+  font-weight: 500;
+}
+
+.referenceShell :global(.ref-profile-details small) {
+  color: var(--text-muted);
+  font-size: 14px;
+  margin-top: 4px;
+}
+
+.referenceShell :global(.ref-profile > .icon-button) {
+  width: 39px;
+  height: 39px;
+  border: 1px solid #e4e4e4;
+  border-radius: 11px;
+  color: #101010;
+  background: #fafafa;
+}
+
+.referenceShell :global(.ref-profile > .icon-button svg) {
+  width: 18px;
+  height: 18px;
+}
+
+.referenceShell :global(.account-panel),
+.referenceShell :global(.ref-workspace-menu) {
+  position: absolute;
+  z-index: 60;
+  top: calc(100% + 7px);
+  left: 0;
+  width: min(292px, calc(100vw - 28px));
+  padding: 9px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  color: var(--text);
+  background: var(--surface-raised);
+  box-shadow: var(--shadow);
+}
+
+.referenceShell :global(.account-panel) {
+  display: grid;
+  gap: 7px;
+}
+
+.referenceShell :global(.account-panel > strong) {
+  font-size: 12px;
+}
+
+.referenceShell :global(.account-panel > small) {
+  overflow: hidden;
+  color: var(--text-muted);
+  font-size: 10px;
+  text-overflow: ellipsis;
+}
+
+.referenceShell :global(.account-panel > button) {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px;
+  border: 0;
+  border-radius: 8px;
+  color: var(--text-secondary);
+  background: transparent;
+  font-size: 11px;
+  text-align: left;
+  cursor: pointer;
+}
+
+.referenceShell :global(.account-panel > button:hover),
+.referenceShell :global(.ref-menu-preferences > button:hover) {
+  color: var(--text);
+  background: var(--surface-hover);
+}
+
+.referenceShell :global(.account-panel > button svg) {
+  width: 15px;
+  height: 15px;
+}
+
+.referenceShell :global(.ref-workspace-menu) {
+  display: grid;
+  gap: 5px;
+  max-height: min(75vh, 680px);
+  overflow: auto;
+}
+
+.referenceShell :global(.ref-workspace-menu-head) {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 2px 4px;
+  font-size: 12px;
+}
+
+.referenceShell :global(.ref-workspace-menu-head .icon-button) {
+  width: 28px;
+  height: 28px;
+}
+
+.referenceShell :global(.ref-workspace-menu .nav-group) {
+  gap: 2px;
+  margin: 0;
+  border: 0;
+}
+
+.referenceShell :global(.ref-workspace-menu .nav-group-toggle) {
+  min-height: 30px;
+  padding: 0 8px 3px;
+  color: var(--text-muted);
+  font-size: 9px;
+  letter-spacing: 0.08em;
+}
+
+.referenceShell :global(.ref-workspace-menu .nav-group-items) {
+  gap: 1px;
+}
+
+.referenceShell :global(.ref-workspace-menu .nav-group-items > button) {
+  min-height: 34px;
+  padding: 6px 8px;
+  border-radius: 8px;
+  font-size: 11px;
+}
+
+.referenceShell :global(.ref-workspace-menu .nav-group-items > button.is-active) {
+  color: var(--text);
+  background: var(--surface-active);
+  box-shadow: none;
+}
+
+.referenceShell :global(.ref-menu-preferences) {
+  display: grid;
+  gap: 2px;
+  padding-top: 6px;
+  border-top: 1px solid var(--border);
+}
+
+.referenceShell :global(.ref-menu-preferences > button),
+.referenceShell :global(.ref-menu-preferences > label) {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 34px;
+  padding: 6px 8px;
+  border: 0;
+  border-radius: 8px;
+  color: var(--text-secondary);
+  background: transparent;
+  font-size: 11px;
+  text-align: left;
+}
+
+.referenceShell :global(.ref-menu-preferences > button) {
+  cursor: pointer;
+}
+
+.referenceShell :global(.ref-menu-preferences svg) {
+  flex: 0 0 auto;
+  width: 15px;
+  height: 15px;
+}
+
+.referenceShell :global(.ref-menu-preferences > label select) {
+  min-width: 0;
+  margin-left: auto;
+  border: 0;
+  color: var(--text-secondary);
+  background: transparent;
+  font-size: 10px;
+}
+
+.referenceShell :global(.ref-agent-search) {
+  display: flex;
+  flex: 0 0 auto;
+  align-items: center;
+  gap: 12px;
+  height: 75px;
+  margin: 0;
+  padding: 0 34px 0 45px;
+}
+
+.referenceShell :global(.ref-agent-search > label) {
+  display: flex;
+  flex: 1;
+  align-items: center;
+  gap: 0;
+  min-width: 0;
+  height: 100%;
+  margin: 0 !important;
+  padding: 0 2px;
+  border: 0;
+  border-radius: 0;
+  color: var(--text-muted);
+  background: transparent;
+}
+
+.referenceShell :global(.ref-agent-search > label > span) {
+  display: none;
+}
+
+.referenceShell :global(.ref-agent-search input) {
+  min-width: 0;
+  width: 100%;
+  height: 100%;
+  padding: 0;
+  border: 0;
+  outline: 0;
+  color: var(--text);
+  background: transparent;
+  font-size: 18px;
+}
+
+.referenceShell :global(.ref-agent-search input::placeholder) {
+  color: var(--text-muted);
+}
+
+.referenceShell :global(.ref-agent-search > .primary-button) {
+  flex: 0 0 auto;
+  width: 28px;
+  min-height: 32px;
+  padding: 0;
+  border: 0 !important;
+  border-radius: 0;
+  color: var(--text);
+  background: transparent !important;
+  box-shadow: none !important;
+  font-size: 0;
+  font-weight: 700;
+}
+
+.referenceShell :global(.ref-agent-search > .primary-button svg) {
+  width: 18px;
+  height: 18px;
+}
+
+.referenceShell :global(.ref-agent-list) {
+  display: grid;
+  flex: 1 1 auto;
+  align-content: start;
+  gap: 0;
+  min-height: 60px;
+  margin: 0;
+  padding: 0 22px;
+  overflow: auto;
+  scrollbar-width: thin;
+  scrollbar-color: var(--border-strong) transparent;
+}
+
+.referenceShell :global(.ref-agent-row) {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  min-width: 0;
+  margin: 2px 0 4px;
+  border-radius: 15px;
+}
+
+.referenceShell :global(.ref-agent-row:hover),
+.referenceShell :global(.ref-agent-row.is-selected) {
+  background: #e5e5e5;
+}
+
+.referenceShell :global(.ref-agent-open) {
+  display: flex;
+  flex: 1;
+  align-items: center;
+  gap: 17px;
+  min-width: 0;
+  padding: 12px 17px;
+  border: 0;
+  border-radius: 15px;
+  color: var(--text);
+  background: transparent;
+  text-align: left;
+  cursor: pointer;
+}
+
+.referenceShell :global(.ref-agent-open > span:last-child) {
+  display: grid;
+  min-width: 0;
+  gap: 2px;
+}
+
+.referenceShell :global(.ref-agent-open strong),
+.referenceShell :global(.ref-agent-open small) {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.referenceShell :global(.ref-agent-open strong) {
+  font-size: 18px;
+  font-weight: 400;
+}
+
+.referenceShell :global(.ref-agent-open small) {
+  color: #777;
+  font-size: 16px;
+  margin-top: 7px;
+}
+
+.referenceShell :global(.agent-avatar) {
+  position: relative;
+  display: inline-block;
+  flex: 0 0 auto;
+  overflow: hidden;
+  border: 0;
+  border-radius: var(--shape, 24%);
+  color: var(--eye, #fff);
+  background: var(--bot, #a779ff);
+  box-shadow: none;
+  transform: rotate(var(--rotation, 0deg));
+  transition: transform 200ms ease;
+}
+
+.referenceShell :global(.agent-avatar:hover) {
+  transform: rotate(var(--rotation, 0deg)) scale(1.04);
+}
+
+.referenceShell :global(.agent-avatar--sm),
+.referenceShell :global(.agent-avatar--lg) {
+  width: 56px;
+  height: 56px;
+  min-width: 56px;
+}
+
+.referenceShell :global(.agent-avatar--md) {
+  width: 48px;
+  height: 48px;
+  min-width: 48px;
+}
+
+.referenceShell :global(.agent-avatar__eyes) {
+  position: absolute;
+  top: 18%;
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: center;
+  gap: 7px;
+  transform: translate(var(--ex, 0px), var(--ey, 0px));
+  transition: transform 100ms ease;
+}
+
+.referenceShell :global(.agent-avatar__eyes i) {
+  width: 7px;
+  height: 14px;
+  border-radius: 10px;
+  background: currentColor;
+  transform: rotate(-22deg);
+  transform-origin: center;
+  animation: reference-avatar-blink 5.1s infinite;
+}
+
+.referenceShell :global(.agent-avatar.is-hovering .agent-avatar__eyes i) {
+  animation-play-state: paused;
+}
+
+@keyframes reference-avatar-blink {
+  0%, 42%, 45%, 100% { scale: 1 1; }
+  43% { scale: 1 0.1; }
+}
+
+.referenceShell :global(.ref-agent-delete) {
+  width: 29px;
+  height: 29px;
+  margin-right: 3px;
+  color: var(--text-muted);
+  opacity: 0;
+}
+
+.referenceShell :global(.ref-agent-row:hover .ref-agent-delete),
+.referenceShell :global(.ref-agent-delete:focus-visible) {
+  opacity: 1;
+}
+
+.referenceShell :global(.ref-agent-delete:hover) {
+  color: var(--danger);
+  background: color-mix(in srgb, var(--danger) 9%, transparent);
+}
+
+.referenceShell :global(.ref-agent-empty) {
+  margin: 0;
+  padding: 10px 8px;
+  color: var(--text-muted);
+  font-size: 10px;
+}
+
+.referenceShell :global(.ref-connectors) {
+  display: grid;
+  flex: 0 0 auto;
+  gap: 0;
+  padding: 16px 36px 8px;
+}
+
+.referenceShell :global(.ref-connectors > span) {
+  margin-bottom: 15px;
+  color: #888;
+  font-size: 15px;
+  line-height: normal;
+}
+
+.referenceShell :global(.ref-connectors > button) {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  min-width: 0;
+  min-height: 0;
+  padding: 9px 0;
+  border: 0;
+  border-radius: 0;
+  color: var(--text);
+  background: transparent;
+  text-align: left;
+  cursor: pointer;
+}
+
+.referenceShell :global(.ref-connectors > button:hover) {
+  background: var(--surface-hover);
+}
+
+.referenceShell :global(.ref-connectors > button > span) {
+  display: grid;
+  min-width: 0;
+  gap: 1px;
+}
+
+.referenceShell :global(.ref-connectors strong) {
+  font-size: 17px;
+  font-weight: 500;
+}
+
+.referenceShell :global(.ref-connectors small) {
+  color: #777;
+  font-size: 15px;
+  margin-top: 5px;
+}
+
+.referenceShell :global(.ref-connector-icon) {
+  display: grid;
+  flex: 0 0 auto;
+  place-items: center;
+  width: 45px;
+  height: 45px;
+  border: 1px solid var(--border);
+  border-radius: 50%;
+  color: var(--text-secondary);
+  background: var(--surface);
+}
+
+.referenceShell :global(.ref-connector-icon svg) {
+  width: 23px;
+  height: 23px;
+}
+
+.referenceShell :global(.ref-connector-icon--whatsapp) {
+  border-color: #e5e5e5;
+  color: #20ce70;
+  background: #e5f8ed;
+}
+
+.referenceShell :global(.ref-bottom) {
+  flex: 0 0 auto;
+  padding: 12px 14px;
+}
+
+.referenceShell :global(.ref-bottom .ref-connect-apps) {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  min-height: 48px;
+  width: 100%;
+  margin: 0;
+  padding: 0 14px;
+  border: 1px solid #ddd;
+  border-radius: 26px;
+  color: #101010;
+  background: #fff;
+  font-size: 17px;
+  font-weight: 700;
+}
+
+.referenceShell :global(.ref-bottom .ref-connect-apps svg) {
+  width: 18px;
+  height: 18px;
+}
+
+.referenceShell.sidebar-is-collapsed {
+  --sidebar-width: 74px;
+}
+
+.referenceShell.sidebar-is-collapsed :global(.premium-sidebar) {
+  align-items: center;
+  padding-inline: 8px;
+}
+
+.referenceShell.sidebar-is-collapsed :global(.ref-profile-details > span:last-child),
+.referenceShell.sidebar-is-collapsed :global(.ref-agent-search > label),
+.referenceShell.sidebar-is-collapsed :global(.ref-agent-open > span:last-child),
+.referenceShell.sidebar-is-collapsed :global(.ref-connectors > span),
+.referenceShell.sidebar-is-collapsed :global(.ref-connectors > button > span) {
+  display: none;
+}
+
+.referenceShell.sidebar-is-collapsed :global(.ref-profile),
+.referenceShell.sidebar-is-collapsed :global(.ref-agent-search),
+.referenceShell.sidebar-is-collapsed :global(.ref-connectors) {
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.referenceShell.sidebar-is-collapsed :global(.ref-agent-search) {
+  margin-top: 12px;
+}
+
+.referenceShell.sidebar-is-collapsed :global(.ref-agent-list) {
+  flex: 1 1 auto;
+}
+
+.referenceShell.sidebar-is-collapsed :global(.ref-agent-open) {
+  justify-content: center;
+  padding-inline: 4px;
+}
+
+.referenceShell.sidebar-is-collapsed :global(.ref-agent-delete),
+.referenceShell.sidebar-is-collapsed :global(.ref-agent-empty),
+.referenceShell.sidebar-is-collapsed :global(.ref-bottom) {
+  display: none;
+}
+
+.referenceShell :global(.ref-header) {
+  display: flex;
+  flex: 0 0 auto;
+  align-items: center;
+  gap: 14px;
+  height: 87px;
+  min-height: 87px;
+  padding: 0 24px 0 28px;
+  border: 0;
+  background: #fff;
+}
+
+.referenceShell :global(.ref-header-title) {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  min-width: 0;
+}
+
+.referenceShell :global(.ref-header-title > strong) {
+  overflow: hidden;
+  color: var(--text);
+  min-width: 190px;
+  font-size: 24px;
+  font-weight: 500;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.referenceShell :global(.ref-header-title .brand-mark) {
+  width: 48px;
+  height: 48px;
+  min-width: 48px;
+  border: 0;
+  border-radius: 29%;
+  color: #fff;
+  background: #a779ff;
+  box-shadow: none;
+}
+
+.referenceShell :global(.ref-header-title .brand-mark svg) {
+  display: none;
+}
+
+.referenceShell :global(.ref-header-title .status-pill) {
+  margin-left: 3px;
+  padding: 7px 15px;
+  border: 0;
+  border-radius: 999px;
+  color: #777;
+  background: #f5f5f5;
+  font-size: 14px;
+}
+
+.referenceShell :global(.ref-mode-switch) {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  padding: 4px;
+  border: 4px solid #f2f2f2;
+  border-radius: 30px;
+  background: #f2f2f2;
+}
+
+.referenceShell :global(.ref-mode-switch button) {
+  min-height: 0;
+  padding: 9px 20px;
+  border: 0;
+  border-radius: 23px;
+  color: #101010;
+  background: transparent;
+  font-size: 16px;
+  font-weight: 400;
+  cursor: pointer;
+}
+
+.referenceShell :global(.ref-mode-switch button:hover) {
+  color: var(--text);
+  background: var(--surface-hover);
+}
+
+.referenceShell :global(.ref-mode-switch button.is-active) {
+  color: var(--text);
+  background: #fff;
+  box-shadow: 0 1px 5px #ddd;
+}
+
+.referenceShell :global(.ref-header-actions) {
+  display: flex;
+  justify-self: end;
+  align-items: center;
+  gap: 14px;
+  margin-left: auto;
+}
+
+.referenceShell :global(.ref-token-button) {
+  min-height: 0;
+  padding: 11px 15px;
+  border: 1px solid #e4e4e4;
+  border-radius: 12px;
+  color: #101010;
+  background: #fff;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.referenceShell :global(.ref-token-button:hover) {
+  border-color: var(--border-strong);
+  color: var(--text);
+}
+
+.referenceShell :global(.ref-header-actions .icon-button) {
+  width: 39px;
+  height: 39px;
+  border: 1px solid #e4e4e4;
+  border-radius: 12px;
+  color: #101010;
+  background: #fff;
+}
+
+.referenceShell :global(.premium-page-content) {
+  display: flex;
+  flex: 1 1 auto;
+  min-height: 0;
+  padding: 25px 12px 22px;
+}
+
+.referenceShell :global(.home-hero) {
+  grid-template-columns: minmax(0, 1.3fr) minmax(230px, 0.8fr);
+}
+
+.referenceShell :global(.home-system-status) {
+  grid-column: auto;
+}
+
+.referenceShell :global(.premium-main--chat .premium-page-content) {
+  flex: 1 1 auto;
+  min-height: 0;
+  padding: 0;
+}
+
+.referenceShell :global(.premium-chat-layout) {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  width: min(100%, 1080px);
+  min-height: 0;
+  margin: 0 auto;
+  padding: 25px 12px 22px;
+}
+
+.referenceShell :global(.chat-history-drawer),
+.referenceShell :global(.premium-chat-header) {
+  display: none;
+}
+
+.referenceShell :global(.premium-chat-main) {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.referenceShell :global(.premium-chat-transcript) {
+  flex: 1 1 auto;
+  min-height: 0;
+  padding: 0 0 12px;
+  overflow: auto;
+}
+
+.referenceShell :global(.premium-chat-message) {
+  margin: 10px 0 26px;
+}
+
+.referenceShell :global(.premium-chat-message--assistant .message-body) {
+  padding: 24px 29px;
+  border: 1px solid #e4e4e4;
+  border-radius: 28px;
+  background: #fafafa;
+}
+
+.referenceShell :global(.premium-chat-message--assistant .message-byline) {
+  margin-bottom: 13px;
+  color: #777;
+  font-size: 19px;
+}
+
+.referenceShell :global(.premium-chat-message--assistant .message-text) {
+  color: #101010;
+  font-size: 19px;
+  line-height: 1.8;
+  white-space: pre-wrap;
+}
+
+.referenceShell :global(.premium-chat-message--user) {
+  width: fit-content;
+  max-width: 76%;
+  margin-left: auto;
+  padding: 15px 20px;
+  border-radius: 20px;
+  background: #f3f3f3;
+  font-size: 17px;
+}
+
+.referenceShell :global(.premium-chat-message--user .message-body),
+.referenceShell :global(.premium-chat-message--user .message-text) {
+  color: #101010;
+}
+
+.referenceShell :global(.premium-chat-welcome h1) {
+  font-size: 24px;
+  font-weight: 500;
+}
+
+.referenceShell :global(.premium-chat-composer) {
+  min-height: 76px;
+  padding: 10px 15px 10px 26px;
+  gap: 18px;
+  border: 1px solid #dedede;
+  border-radius: 42px;
+  background: #fff;
+  box-shadow: 0 6px 30px #00000009;
+}
+
+.referenceShell :global(.premium-chat-composer textarea) {
+  height: 31px;
+  max-height: 130px;
+  padding: 4px;
+  font-size: 20px;
+}
+
+.referenceShell :global(.premium-chat-composer .composer-attach),
+.referenceShell :global(.premium-chat-composer .composer-send),
+.referenceShell :global(.premium-chat-composer .voice-composer .icon-control) {
+  width: 39px;
+  height: 39px;
+}
+
+.referenceShell :global(.premium-chat-composer .composer-send) {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  color: #fff;
+  background: #3c82fa;
+}
+
+.referenceShell :global(.premium-chat-composer .composer-send svg) {
+  width: 22px;
+  height: 22px;
+}
+
+.referenceShell :global(.wa-chat-intro) {
+  padding-top: 16px;
+}
+
+.referenceShell :global(.premium-banner) {
+  margin-inline: 25px;
+}
+
+.referenceShell :global(.agent-builder-overlay) {
+  z-index: 600;
+  padding: 15px;
+  background: #0008;
+  backdrop-filter: none;
+}
+
+.referenceShell :global(.approved-agent-create) {
+  width: 370px;
+  max-width: 96vw;
+  max-height: 95vh;
+  padding: 22px 20px 20px;
+  overflow: auto;
+  border: 0;
+  border-radius: 28px;
+  color: #101010;
+  background: #fff;
+  box-shadow: 0 25px 90px #0002;
+  text-align: center;
+}
+
+.referenceShell :global(.approved-agent-create .agent-builder-close) {
+  top: 12px;
+  right: 12px;
+  width: 34px;
+  height: 34px;
+  border: 0;
+  color: #101010;
+  background: #f1f1f1;
+}
+
+.referenceShell :global(.approved-agent-preview) {
+  display: flex;
+  justify-content: center;
+  margin: 0 auto 13px;
+}
+
+.referenceShell :global(.approved-agent-preview .agent-avatar) {
+  width: 58px;
+  height: 58px;
+  min-width: 58px;
+}
+
+.referenceShell :global(.approved-agent-create > h2) {
+  margin: 10px 0 15px;
+  color: #101010;
+  font-size: 17px;
+  font-weight: 600;
+}
+
+.referenceShell :global(.approved-agent-create .agent-color-row) {
+  justify-content: center;
+  gap: 7px;
+}
+
+.referenceShell :global(.approved-agent-create .agent-color) {
+  width: 22px;
+  height: 22px;
+  padding: 0;
+  border: 0;
+}
+
+.referenceShell :global(.approved-agent-create .agent-color[aria-pressed="true"]) {
+  outline: 2px solid #111;
+  outline-offset: 3px;
+  box-shadow: none;
+}
+
+.referenceShell :global(.approved-agent-create .agent-color svg) {
+  width: 13px;
+  height: 13px;
+}
+
+.referenceShell :global(.approved-agent-create .agent-custom-color) {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin: 12px 0;
+  color: #888;
+  font-size: 12px;
+}
+
+.referenceShell :global(.approved-agent-create .agent-custom-color input[type="color"]) {
+  width: 34px;
+  height: 28px;
+  padding: 2px;
+  border: 1px solid #ddd !important;
+  border-radius: 6px;
+  background: #fff !important;
+}
+
+.referenceShell :global(.approved-agent-create .agent-shape-row) {
+  justify-content: center;
+  gap: 12px;
+  margin: 14px;
+}
+
+.referenceShell :global(.approved-agent-create .agent-shape) {
+  display: grid;
+  place-items: center;
+  width: 29px;
+  height: 29px;
+  padding: 0;
+  border: 0;
+  background: #c8c8cc;
+}
+
+.referenceShell :global(.approved-agent-create .agent-shape-preview) {
+  display: block;
+  width: 100%;
+  height: 100%;
+  background: #c8c8cc;
+}
+
+.referenceShell :global(.approved-agent-create .agent-shape.is-selected) {
+  outline: 2px solid #222;
+  outline-offset: 2px;
+  border-color: transparent;
+  background: #c8c8cc;
+}
+
+.referenceShell :global(.approved-agent-create .approved-agent-name) {
+  display: block;
+  margin: 14px 0 6px;
+  color: #888;
+  font-size: 12px;
+  text-align: left;
+}
+
+.referenceShell :global(.approved-agent-create .approved-agent-name input) {
+  display: block;
+  width: 100%;
+  margin-top: 6px;
+  padding: 11px;
+  border: 1px solid #ddd !important;
+  border-radius: 8px;
+  color: #101010 !important;
+  background: #fff !important;
+  font-size: 14px;
+}
+
+.referenceShell :global(.approved-agent-create .agent-builder-submit) {
+  width: 100%;
+  margin: 15px 0;
+  padding: 12px;
+  border: 0;
+  border-radius: 9px;
+  color: #101010;
+  background: #f0f0f0;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.referenceShell :global(.approved-agent-suggestions) {
+  margin-top: 12px;
+  color: #888;
+  font-size: 12px;
+  text-align: left;
+}
+
+.referenceShell :global(.approved-agent-suggestions > div) {
+  display: flex;
+  gap: 8px;
+  margin-top: 6px;
+}
+
+.referenceShell :global(.approved-agent-suggestions button) {
+  display: flex;
+  flex: 1;
+  align-items: flex-start;
+  gap: 7px;
+  padding: 10px 8px;
+  border: 1px solid #ddd;
+  border-radius: 12px;
+  color: #101010;
+  background: #fff;
+  font-size: 12px;
+  text-align: left;
+}
+
+.referenceShell :global(.approved-agent-suggestions button > svg) {
+  flex: 0 0 auto;
+  width: 15px;
+  height: 15px;
+}
+
+.referenceShell :global(.approved-agent-suggestions button small) {
+  display: block;
+  margin-top: 5px;
+  color: #777;
+  font-size: 10px;
+}
+
+.referenceShell :global(.reference-dialog-overlay) {
+  position: fixed;
+  z-index: 500;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 15px;
+  background: #0008;
+}
+
+.referenceShell :global(.reference-dialog) {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  max-height: 95vh;
+  overflow: hidden;
+  border-radius: 28px;
+  color: #101010;
+  background: #fff;
+  box-shadow: 0 25px 90px #0002;
+}
+
+.referenceShell :global(.reference-dialog-close) {
+  position: absolute;
+  z-index: 2;
+  top: 20px;
+  right: 22px;
+  display: grid;
+  place-items: center;
+  width: 45px;
+  height: 45px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  color: #101010;
+  background: #f1f1f1;
+}
+
+.referenceShell :global(.reference-dialog-close svg) {
+  width: 21px;
+  height: 21px;
+}
+
+.referenceShell :global(.reference-dialog--apps),
+.referenceShell :global(.reference-dialog--market) {
+  width: min(1100px, 95vw);
+  padding: 42px 40px;
+  overflow: auto;
+}
+
+.referenceShell :global(.reference-submodal h2) {
+  margin: 0 0 10px;
+  color: #101010;
+  font-size: 29px;
+  font-weight: 600;
+}
+
+.referenceShell :global(.reference-subtitle) {
+  margin: 0 0 30px;
+  color: #777;
+  font-size: 17px;
+}
+
+.referenceShell :global(.reference-connected-count) {
+  color: #777;
+}
+
+.referenceShell :global(.reference-connector-search) {
+  width: 100%;
+  padding: 18px;
+  border: 1px solid #e6e6e6;
+  border-radius: 14px;
+  background: #f5f5f5;
+  font-size: 18px;
+}
+
+.referenceShell :global(.reference-filter-row) {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin: 18px 0 24px;
+}
+
+.referenceShell :global(.reference-filter-row button) {
+  padding: 11px 19px;
+  border: 1px solid #e5e5e5;
+  border-radius: 25px;
+  background: #f6f6f6;
+  font-size: 15px;
+}
+
+.referenceShell :global(.reference-filter-row button.is-selected) {
+  color: #fff;
+  background: #080808;
+}
+
+.referenceShell :global(.reference-connect-grid) {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.referenceShell :global(.reference-connect-grid .connector-card) {
+  min-width: 0;
+  min-height: 112px;
+  padding: 20px;
+  border: 1px solid #e5e5e5;
+  border-radius: 17px;
+  color: #101010;
+  background: #fff;
+}
+
+.referenceShell :global(.reference-connect-grid .connector-card-top) {
+  justify-content: space-between;
+}
+
+.referenceShell :global(.reference-connect-grid .connector-card h3) {
+  margin: 7px 0;
+  font-size: 19px;
+}
+
+.referenceShell :global(.reference-connect-grid .connector-card p),
+.referenceShell :global(.reference-connect-grid .connector-card details) {
+  color: #777;
+  font-size: 13px;
+}
+
+.referenceShell :global(.reference-connect-grid .connector-actions-list) {
+  display: none;
+}
+
+.referenceShell :global(.reference-whatsapp-link) {
+  margin-top: 16px;
+}
+
+.referenceShell :global(.reference-market-card) {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  margin: 14px 0;
+  padding: 22px;
+  border: 1px solid #e5e5e5;
+  border-radius: 17px;
+}
+
+.referenceShell :global(.reference-market-card > span) {
+  display: grid;
+  flex: 1;
+  min-width: 0;
+  gap: 8px;
+}
+
+.referenceShell :global(.reference-market-card strong) {
+  font-size: 19px;
+}
+
+.referenceShell :global(.reference-market-card small) {
+  color: #777;
+  font-size: 16px;
+}
+
+.referenceShell :global(.reference-dialog--settings) {
+  width: min(1370px, 95vw);
+  height: min(860px, 96vh);
+  flex-direction: row;
+}
+
+.referenceShell :global(.reference-settings-nav) {
+  display: flex;
+  flex: 0 0 335px;
+  flex-direction: column;
+  gap: 4px;
+  padding: 30px 18px;
+  border-right: 1px solid #e7e7e7;
+  background: #fafafa;
+}
+
+.referenceShell :global(.reference-settings-nav button) {
+  display: flex;
+  align-items: center;
+  min-height: 58px;
+  padding: 18px 20px;
+  border: 0;
+  border-radius: 15px;
+  background: transparent;
+  font-size: 20px;
+  text-align: left;
+}
+
+.referenceShell :global(.reference-settings-nav button.is-selected),
+.referenceShell :global(.reference-settings-nav button:hover) {
+  background: #e8e8e8;
+}
+
+.referenceShell :global(.reference-settings-body) {
+  flex: 1;
+  min-width: 0;
+  overflow: auto;
+  padding: 62px 60px;
+}
+
+.referenceShell :global(.reference-settings-body > h2) {
+  margin: 0 0 34px;
+  font-size: 36px;
+  font-weight: 600;
+}
+
+.referenceShell :global(.reference-settings-body .card) {
+  margin: 0 0 20px;
+  padding: 30px;
+  border: 1px solid #e3e3e3;
+  border-radius: 26px;
+  color: #101010;
+  background: #fff;
+}
+
+.referenceShell :global(.reference-dialog--share) {
+  width: min(560px, 94vw);
+  padding: 40px;
+}
+
+.referenceShell :global(.reference-submodal--share h2) {
+  font-family: Georgia, serif;
+  font-size: 29px;
+}
+
+.referenceShell :global(.reference-submodal--share p) {
+  color: #777;
+  font-size: 17px;
+  line-height: 1.6;
+}
+
+.referenceShell :global(.reference-submodal--share .black) {
+  margin-top: 12px;
+}
+
+@media (max-width: 900px) {
+  :global(.premium-workspace).referenceShell {
+    --sidebar-width: 275px;
+  }
+
+  .referenceShell :global(.ref-header-title > strong) {
+    min-width: 0;
+  }
+
+  .referenceShell :global(.ref-token-button) {
+    display: none;
+  }
+}
+
+@media (max-width: 650px) {
+  :global(.premium-workspace).referenceShell {
+    --sidebar-width: 84px;
+  }
+
+  .referenceShell :global(.premium-sidebar) {
+    align-items: center;
+    padding: 15px;
+  }
+
+  .referenceShell :global(.ref-profile) {
+    height: 76px;
+    padding: 15px;
+  }
+
+  .referenceShell :global(.ref-profile-details > span:last-child),
+  .referenceShell :global(.ref-profile > .icon-button),
+  .referenceShell :global(.ref-agent-search > label),
+  .referenceShell :global(.ref-agent-open > span:last-child),
+  .referenceShell :global(.ref-agent-delete),
+  .referenceShell :global(.ref-agent-empty),
+  .referenceShell :global(.ref-connectors),
+  .referenceShell :global(.ref-bottom) {
+    display: none;
+  }
+
+  .referenceShell :global(.ref-agent-search) {
+    justify-content: center;
+    height: 50px;
+    padding: 10px;
+  }
+
+  .referenceShell :global(.ref-agent-list) {
+    padding: 5px;
+  }
+
+  .referenceShell :global(.ref-agent-open) {
+    justify-content: center;
+    padding: 9px;
+  }
+
+  .referenceShell :global(.ref-agent-open .agent-avatar) {
+    width: 48px;
+    height: 48px;
+    min-width: 48px;
+  }
+
+  .referenceShell :global(.premium-main) {
+    min-height: 100dvh;
+    max-height: none;
+  }
+
+  .referenceShell :global(.ref-header) {
+    height: 72px;
+    min-height: 72px;
+    padding: 8px;
+    gap: 8px;
+  }
+
+  .referenceShell :global(.ref-header-title .brand-mark) {
+    width: 37px;
+    height: 37px;
+    min-width: 37px;
+  }
+
+  .referenceShell :global(.ref-header-title > strong) {
+    font-size: 16px;
+    min-width: 0;
+  }
+
+  .referenceShell :global(.ref-header-title .status-pill) {
+    display: none;
+  }
+
+  .referenceShell :global(.ref-mode-switch button) {
+    padding: 7px 10px;
+    font-size: 12px;
+  }
+
+  .referenceShell :global(.ref-header-actions) {
+    margin-left: 0;
+    gap: 8px;
+  }
+
+  .referenceShell :global(.ref-header-actions .icon-button),
+  .referenceShell :global(.ref-header-actions .ref-token-button) {
+    display: none;
+  }
+
+  .referenceShell :global(.premium-page-content) {
+    min-height: calc(100dvh - 72px);
+    padding: 10px 8px;
+  }
+
+  .referenceShell :global(.premium-chat-message--assistant) {
+    font-size: 15px;
+  }
+
+  .referenceShell :global(.premium-chat-message--assistant .message-body) {
+    padding: 15px;
+  }
+
+  .referenceShell :global(.premium-chat-message--assistant .message-text) {
+    font-size: 15px;
+  }
+
+  .referenceShell :global(.premium-chat-message--assistant .message-byline) {
+    font-size: 15px;
+  }
+
+  .referenceShell :global(.premium-chat-composer) {
+    min-height: 60px;
+    padding: 6px 10px;
+  }
+
+  .referenceShell :global(.premium-chat-composer textarea) {
+    font-size: 15px;
+  }
+
+  .referenceShell :global(.premium-chat-composer .composer-send) {
+    width: 40px;
+    height: 40px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .referenceShell :global(.ref-agent-row),
+  .referenceShell :global(.ref-agent-delete),
+  .referenceShell :global(.ref-header-actions .icon-button) {
+    transition: none;
+  }
+}

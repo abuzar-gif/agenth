@@ -1,0 +1,182 @@
+/* Isolated light WhatsApp workspace embedded in V2 right panel */
+html,body{min-height:100%;margin:0}
+.v2-whatsapp-page{--text:#1b1b1b;--text-secondary:#606060;--text-muted:#888;--surface:#fff;--surface-raised:#fafafa;--surface-hover:#f2f2f2;--surface-active:#ebf8ef;--border:#e7e7e7;--border-strong:#dadada;--danger:#b91c1c;--warning:#93620f;--success:#168a49;isolation:isolate;color:#1b1b1b;background:#fff;font-family:Arial,Helvetica,sans-serif;min-height:100dvh;padding:30px clamp(18px,4%,44px);font-size:15px}
+.v2-whatsapp-page *{box-sizing:border-box}
+.v2-whatsapp-page button{cursor:pointer;font:inherit}
+.v2-whatsapp-page button:disabled{cursor:not-allowed;opacity:.5}
+.v2-whatsapp-header{display:flex;justify-content:space-between;align-items:center;gap:20px;flex-wrap:wrap;border-bottom:1px solid #ececec;padding-bottom:24px}
+.v2-whatsapp-heading{display:flex;align-items:center;gap:16px;min-width:0}
+.v2-whatsapp-logo{width:58px;height:58px;display:grid;place-items:center;border-radius:19px;background:#e4faec;color:#139a4e;flex:none}
+.v2-whatsapp-heading h1{font-size:27px;font-weight:600;line-height:1.2;margin:0 0 5px;letter-spacing:-.03em;color:#191919}
+.v2-whatsapp-heading p{color:#777;font-size:14px;margin:0;line-height:1.5}
+.v2-whatsapp-header-actions{display:flex;align-items:center;gap:10px}
+.v2-whatsapp-state{display:inline-flex;align-items:center;gap:7px;background:#f6f6f6;padding:8px 14px;border-radius:22px;text-transform:capitalize;font-size:13px;color:#666}
+.v2-whatsapp-state span{display:inline-block;height:9px;width:9px;border-radius:50%;background:#aaa}
+.v2-whatsapp-state.is-connected{color:#167b43;background:#e9f8ee}
+.v2-whatsapp-state.is-connected span{background:#25d366}
+.v2-whatsapp-refresh{height:37px;width:37px;display:grid;place-items:center;border:1px solid #e9e9e9;border-radius:13px;background:#fff}
+.v2-whatsapp-tabs{display:flex;gap:10px;flex-wrap:wrap;padding:20px 0 23px;border-bottom:1px solid #f0f0f0}
+.v2-whatsapp-tabs button{display:inline-flex;align-items:center;gap:7px;background:#fff;border:1px solid #e9e9e9;border-radius:14px;padding:11px 15px;font-size:14px;color:#707070}
+.v2-whatsapp-tabs button[aria-selected="true"]{color:#202020;font-weight:600;background:#f3f3f3;border-color:#e0e0e0}
+.v2-whatsapp-content{padding-top:26px;max-width:920px;margin:0 auto}
+.v2-whatsapp-content .connector-card.whatsapp-linked-card{border:1px solid #eaeaea;background:#fff;padding:25px;border-radius:21px;box-shadow:0 5px 26px #0000000b;color:#252525;width:100%;max-width:none;display:block}
+.v2-whatsapp-content .whatsapp-linked-heading h3{font-size:24px;color:#161616}
+.v2-whatsapp-content .whatsapp-linked-heading span{font-size:12px}
+.v2-whatsapp-content .whatsapp-linked-card > p{font-size:14px;color:#777}
+.v2-whatsapp-content .connector-actions-list{display:flex;flex-wrap:wrap;gap:8px;margin:16px 0}
+.v2-whatsapp-content .connector-actions-list span{background:#f5f5f5;color:#555;font-size:12px;padding:7px 11px;border-radius:12px}
+.v2-whatsapp-content .whatsapp-linked-actions .primary-button,.v2-whatsapp-content .whatsapp-link-dialog .primary-button,.v2-whatsapp-content .wa-chat .primary-button{display:inline-flex;align-items:center;gap:8px;justify-content:center;border:0;background:#1f1f1f;color:#fff;border-radius:13px;padding:11px 18px;font-weight:600;text-decoration:none;min-height:41px;font-size:14px;cursor:pointer}
+.v2-whatsapp-content .whatsapp-linked-secondary{justify-content:flex-start;gap:24px;margin-top:10px}
+.v2-whatsapp-content .whatsapp-linked-secondary button{font-size:13px}
+.v2-whatsapp-content .whatsapp-link-dialog{background:#fff;color:#161616}
+.v2-whatsapp-content .whatsapp-link-dialog h2{font-size:23px}
+.v2-whatsapp-content .whatsapp-link-dialog .whatsapp-link-segments{background:#f5f5f5}
+.v2-whatsapp-content .whatsapp-link-dialog .whatsapp-link-segments button[aria-pressed="true"]{background:#fff;color:#222}
+.v2-whatsapp-content .whatsapp-link-dialog .whatsapp-permission-list label{background:#fff;border-color:#eee}
+.v2-whatsapp-content .whatsapp-link-dialog .whatsapp-permission-list strong{color:#222}
+.v2-whatsapp-content .whatsapp-link-dialog .whatsapp-permission-list small{color:#888}
+.v2-whatsapp-content .whatsapp-link-dialog .whatsapp-link-code-area{background:#fafafa}
+.v2-whatsapp-content .whatsapp-link-dialog .whatsapp-link-description{color:#777}
+.v2-whatsapp-content .whatsapp-link-dialog .secondary-button{border:1px solid #ddd;background:#fff;color:#333;padding:10px 15px;border-radius:13px;font-weight:600}
+.v2-whatsapp-page .v2-whatsapp-note{font-size:12px;color:#888;line-height:1.7;margin:22px 0}
+.v2-whatsapp-contacts{margin:0 auto;max-width:800px}
+.v2-whatsapp-contacts h2{font-size:22px;margin:0 0 10px;font-weight:650;color:#191919}
+.v2-whatsapp-contacts > p{font-size:14px;color:#777;line-height:1.7;margin:0 0 22px}
+.v2-whatsapp-info{padding:16px 20px;background:#f9f9f9;color:#646464;border:1px solid #eaeaea;border-radius:17px;font-size:14px;line-height:1.7;margin:18px 0}
+.v2-whatsapp-info button{background:none;border:0;text-decoration:underline;color:#15783f;margin-left:4px;padding:0;font-weight:700}
+.v2-whatsapp-search{display:flex;gap:11px;align-items:stretch;margin:18px 0}
+.v2-whatsapp-search-label{display:flex;align-items:center;gap:11px;border:1px solid #dedede;padding:10px 15px;border-radius:14px;flex:1;min-width:0;color:#888}
+.v2-whatsapp-search-label:focus-within{border-color:#158d48;outline:2px solid #25d36620}
+.v2-whatsapp-search-label input{border:0;outline:0;background:transparent;min-width:0;flex:1;font:inherit;font-size:15px}
+.v2-whatsapp-search>button{background:#191919;border:0;border-radius:14px;padding:10px 22px;color:#fff;display:inline-flex;align-items:center;gap:7px;justify-content:center}
+.v2-whatsapp-results{margin-top:22px}
+.v2-whatsapp-results>p{color:#999;font-size:13px}
+.v2-whatsapp-contact{display:flex;align-items:center;gap:14px;padding:12px;border:1px solid #eee;margin:8px 0;border-radius:14px;background:#fff}
+.v2-whatsapp-contact-avatar{width:43px;height:43px;display:grid;place-items:center;background:#e5f8ec;color:#12733e;border-radius:50%;font-weight:700;font-size:19px}
+.v2-whatsapp-contact div{display:grid;gap:5px;min-width:0}
+.v2-whatsapp-contact strong{font-size:15px;overflow-wrap:anywhere}
+.v2-whatsapp-contact small{color:#888;font-size:12px}
+.v2-whatsapp-source{color:#888!important;font-size:12px}
+.v2-whatsapp-error{color:#aa2233;background:#fff4f4;border:1px solid #f2ced3;padding:12px 14px;border-radius:13px;margin:16px 0;font-size:13px}
+.v2-whatsapp-agent .wa-chat{min-height:340px;color:#222;background:#fff}
+.v2-whatsapp-live{max-width:1040px;margin:0 auto}.v2-whatsapp-live>h2{margin:0 0 6px;color:#191919;font-size:23px}.v2-whatsapp-live>p{margin:0 0 18px;color:#777;line-height:1.6}.v2-whatsapp-live .wa-mini{max-width:none;height:min(72vh,720px);display:flex;flex-direction:column}.v2-whatsapp-live .wa-mini-body{height:auto;flex:1;min-height:0}.wa-sync-button{display:inline-flex;align-items:center;gap:6px;border:1px solid #bfe4cc!important;background:#f0fbf4!important;color:#15783f!important;border-radius:9px;padding:7px 10px!important;font-size:12px!important;font-weight:700}.wa-live-compose{display:flex;gap:8px;padding:10px 0 0;position:sticky;bottom:0;background:#ece5dd}.wa-live-compose input{min-width:0;flex:1;border:0;border-radius:10px;padding:10px 12px;font:inherit;color:#172b24}.wa-live-compose button{display:grid;place-items:center;width:40px;border:0;border-radius:50%;background:#25d366;color:#fff}.wa-live-compose button:disabled{opacity:.5}.wa-mini-body main{display:flex;flex-direction:column}.wa-message-list{flex:1;min-height:0}.wa-avatar-image{object-fit:cover}.is-spinning{animation:v2whaspin 1s linear infinite}
+.v2-whatsapp-agent .wa-chat h2,.v2-whatsapp-agent .wa-chat h3{color:#222}
+.v2-whatsapp-agent .wa-chat p{color:#666}
+.v2-whatsapp-spin{animation:v2whaspin 1s linear infinite}
+@keyframes v2whaspin{to{transform:rotate(360deg)}}
+
+/* Full connector: keep the Agent conversation intentionally dense instead of
+   leaving a mostly empty canvas around a few chat bubbles. */
+.v2-whatsapp-page:not(.v2-wa-chat-embed){padding:24px clamp(24px,4vw,58px)}
+.v2-whatsapp-page:not(.v2-wa-chat-embed) .v2-whatsapp-header,.v2-whatsapp-page:not(.v2-wa-chat-embed) .v2-whatsapp-tabs{max-width:1120px;margin-left:auto;margin-right:auto}
+.v2-whatsapp-page:not(.v2-wa-chat-embed) .v2-whatsapp-header{padding-bottom:18px}
+.v2-whatsapp-page:not(.v2-wa-chat-embed) .v2-whatsapp-tabs{padding:15px 0 17px}
+.v2-whatsapp-page:not(.v2-wa-chat-embed) .v2-whatsapp-content{max-width:1120px;padding-top:20px}
+.v2-whatsapp-page:not(.v2-wa-chat-embed) .v2-whatsapp-agent{min-height:calc(100dvh - 225px);display:flex}
+.v2-whatsapp-page:not(.v2-wa-chat-embed) .v2-whatsapp-agent .wa-chat{width:100%;max-width:none;min-height:0;display:flex;flex-direction:column;border:1px solid #e9e9e9;border-radius:20px;background:#fff;overflow:hidden;box-shadow:0 12px 35px #11111108}
+.v2-whatsapp-page:not(.v2-wa-chat-embed) .v2-whatsapp-agent .wa-chat-header{padding:17px 22px;border-bottom:1px solid #ededed;flex:none}
+.v2-whatsapp-page:not(.v2-wa-chat-embed) .v2-whatsapp-agent .wa-chat-header h2{font-size:18px;margin:0}
+.v2-whatsapp-page:not(.v2-wa-chat-embed) .v2-whatsapp-agent .wa-chat-header p{font-size:13px;margin:3px 0 0}
+.v2-whatsapp-page:not(.v2-wa-chat-embed) .v2-whatsapp-agent .wa-transcript{flex:1;min-height:260px;max-height:none;overflow-y:auto;padding:20px 28px;background:#fcfcfc}
+.v2-whatsapp-page:not(.v2-wa-chat-embed) .v2-whatsapp-agent .wa-turn{margin:0 0 20px;gap:10px}
+.v2-whatsapp-page:not(.v2-wa-chat-embed) .v2-whatsapp-agent .wa-bubble{max-width:min(700px,78%);padding:14px 17px;border-color:#e6e6e6;background:#fff;box-shadow:none}
+.v2-whatsapp-page:not(.v2-wa-chat-embed) .v2-whatsapp-agent .wa-user{background:#f2f2f2;border-color:#f2f2f2}
+.v2-whatsapp-page:not(.v2-wa-chat-embed) .v2-whatsapp-agent .wa-composer{position:static;margin:15px 22px 18px;padding:9px 12px 9px 16px;display:flex;align-items:center;gap:10px;min-height:58px;border-radius:16px;background:#fff}
+.v2-whatsapp-page:not(.v2-wa-chat-embed) .v2-whatsapp-agent .wa-composer textarea{min-height:28px!important;height:28px!important;padding:4px!important;font-size:14px!important}
+.v2-whatsapp-page:not(.v2-wa-chat-embed) .v2-whatsapp-agent .wa-composer-hint{margin:0 22px 15px;text-align:center}
+@media(max-width:700px){.v2-whatsapp-page:not(.v2-wa-chat-embed) .v2-whatsapp-agent{min-height:calc(100dvh - 205px)}.v2-whatsapp-page:not(.v2-wa-chat-embed) .v2-whatsapp-agent .wa-chat-header{padding:13px}.v2-whatsapp-page:not(.v2-wa-chat-embed) .v2-whatsapp-agent .wa-transcript{padding:14px}.v2-whatsapp-page:not(.v2-wa-chat-embed) .v2-whatsapp-agent .wa-composer{margin:10px 12px 12px}.v2-whatsapp-page:not(.v2-wa-chat-embed) .v2-whatsapp-agent .wa-bubble{max-width:92%}}
+
+/* Keep the chat header in one deliberate reading order. The previous inherited
+   flex rules could let the status text run into the action buttons. */
+.v2-whatsapp-page .wa-chat-header{display:grid!important;grid-template-columns:minmax(210px,1fr) auto;align-items:center;gap:14px}
+.v2-whatsapp-page .wa-chat-header>div:first-child{min-width:0}
+.v2-whatsapp-page .v2-wa-chat-actions{margin-left:0!important;display:flex;align-items:center;justify-content:flex-end;gap:8px;flex-wrap:wrap}
+.v2-whatsapp-page .v2-wa-private-label{display:inline-flex;align-items:center;gap:5px;white-space:nowrap}
+.v2-whatsapp-page .v2-wa-view-chats,.v2-whatsapp-page .v2-wa-clear-chat,.v2-whatsapp-page .wa-manage{white-space:nowrap;flex:none}
+.v2-whatsapp-page .v2-wa-clear-chat{display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:9px 11px;border:1px solid #ebd7d7;border-radius:11px;background:#fff;color:#9b3b3b;font-size:12px;line-height:1.1}
+.v2-whatsapp-page .v2-wa-clear-chat:hover:not(:disabled){background:#fff5f5;border-color:#dca9a9}
+.v2-whatsapp-page .v2-wa-clear-chat:disabled{opacity:.48;cursor:not-allowed}
+@media(max-width:900px){
+  .v2-whatsapp-page .wa-chat-header{grid-template-columns:1fr}
+  .v2-whatsapp-page .v2-wa-chat-actions{justify-content:flex-start}
+}
+@media(max-width:480px){
+  .v2-whatsapp-page .v2-wa-private-label{display:none}
+  .v2-whatsapp-page .v2-wa-view-chats,.v2-whatsapp-page .v2-wa-clear-chat,.v2-whatsapp-page .wa-manage{flex:1}
+}
+@media(max-width:660px){.v2-whatsapp-page{padding:18px 12px}.v2-whatsapp-heading h1{font-size:21px}.v2-whatsapp-logo{width:44px;height:44px}.v2-whatsapp-tabs{gap:6px}.v2-whatsapp-tabs button{font-size:12px;padding:9px}.v2-whatsapp-search{flex-direction:column}.v2-whatsapp-header-actions{width:100%;justify-content:flex-end}.v2-whatsapp-content .connector-card.whatsapp-linked-card{padding:15px}}
+
+/* Chat-embedded WhatsApp Manager: preserve AgentH V2's outer sidebar/header. */
+.v2-wa-chat-embed{min-height:100dvh;height:100dvh;display:flex;flex-direction:column;padding:0 18px;background:#fff}
+.v2-wa-chat-embed .v2-whatsapp-header{display:none}
+.v2-wa-chat-embed .v2-whatsapp-tabs{flex:none;padding:10px 0;justify-content:center}
+.v2-wa-chat-embed .v2-whatsapp-tabs button{border-radius:14px;font-size:13px;padding:8px 12px}
+.v2-wa-chat-embed .v2-whatsapp-content{display:flex;flex-direction:column;flex:1;min-height:0;padding-top:9px;margin:0 auto;width:100%;max-width:950px}
+.v2-wa-chat-embed .v2-whatsapp-agent{display:flex;flex-direction:column;flex:1;min-height:0}
+.v2-wa-chat-embed .wa-chat{min-height:0;height:100%;display:flex;flex-direction:column;border:0;box-shadow:none;border-radius:0;background:#fff;color:#242424}
+.v2-wa-chat-embed .wa-chat-header{background:#fff;border-bottom:1px solid #f0f0f0;padding:10px 14px}
+.v2-wa-chat-embed .wa-chat-hero,.v2-wa-chat-embed .wa-chat-intro{background:#fafafa;border:1px solid #f0f0f0;border-radius:16px;margin:12px 14px;padding:16px}
+.v2-wa-chat-embed .wa-chat-hero p,.v2-wa-chat-embed .wa-chat-intro p{color:#777}
+.v2-wa-chat-embed .wa-transcript{flex:1;min-height:0;overflow:auto;padding:14px 13px;background:#fff}
+.v2-wa-chat-embed .wa-composer{position:relative;flex:none;background:#fff;border:1px solid #e2e2e2;border-radius:17px;margin:8px 12px;padding:7px}
+.v2-wa-chat-embed .wa-composer textarea{color:#222;background:#fff}
+.v2-wa-chat-embed .wa-bubble{max-width:90%;border-radius:17px;box-shadow:none}
+.v2-wa-chat-embed .wa-user{background:#f0f0f0;color:#282828}
+.v2-wa-chat-embed .wa-agent{background:#fafafa;color:#242424;border:1px solid #efefef}
+.v2-wa-chat-embed .wa-contact-choice,.v2-wa-chat-embed .wa-approval{background:#fff;color:#242424;border:1px solid #e6e6e6;border-radius:13px}
+.v2-wa-chat-embed .wa-composer-hint{margin:3px 14px 12px;color:#999;flex:none;font-size:12px}
+.v2-wa-chat-embed .wa-progress{color:#888}
+@media(max-width:660px){.v2-wa-chat-embed{padding:0 6px}.v2-wa-chat-embed .v2-whatsapp-tabs{gap:4px;flex-wrap:nowrap}.v2-wa-chat-embed .v2-whatsapp-tabs button{font-size:11px;padding:7px}.v2-wa-chat-embed .v2-whatsapp-content{padding:7px 0 0}}
+
+/* Professional V2 WhatsApp chat: messages use the canvas; chats open in an on-demand drawer. */
+.v2-wa-chat-embed .v2-whatsapp-content{flex:1;min-height:0;padding-top:0;max-width:none;margin:0}
+.v2-wa-chat-embed .wa-chat{width:100%;height:100%;min-height:0;max-width:none;overflow:hidden;display:flex;flex-direction:column}
+.v2-wa-chat-embed .wa-chat-header{flex:none;min-height:58px;padding:9px 22px!important;display:flex;justify-content:space-between;align-items:center;gap:12px;border-bottom:1px solid #efefef;background:#fff}
+.v2-wa-chat-embed .wa-chat-header h2{font-size:17px!important;font-weight:600;margin:0;color:#232323}
+.v2-wa-chat-embed .wa-chat-header p{font-size:12px!important;margin:3px 0 0;color:#888}
+.v2-wa-chat-embed .v2-wa-chat-actions{margin-left:auto;display:flex;align-items:center;gap:9px}
+.v2-wa-chat-embed .v2-wa-private-label{display:inline-flex;align-items:center;gap:5px;color:#719178;background:#f0f8f3;border-radius:18px;padding:7px 10px;font-size:11px;white-space:nowrap}
+.v2-wa-chat-embed .v2-wa-view-chats,.v2-wa-chat-embed .wa-manage{display:inline-flex;align-items:center;justify-content:center;gap:7px;white-space:nowrap;padding:9px 12px;border:1px solid #e5e5e5;border-radius:11px;background:#fff;color:#333;font-size:12px!important;text-decoration:none;margin-left:0}
+.v2-wa-chat-embed .v2-wa-view-chats:hover,.v2-wa-chat-embed .wa-manage:hover{background:#f6f6f6;border-color:#cfcfcf}
+.v2-wa-chat-embed .wa-chat-intro{padding:15px 18px!important;margin:14px auto 0!important;max-width:min(660px,94%);background:#fbfbfb;border-radius:16px;border:1px solid #eee;flex:none}
+.v2-wa-chat-embed .wa-chat-intro h3{font-size:18px;margin:0 0 6px;color:#232323}
+.v2-wa-chat-embed .wa-chat-intro p{font-size:13px;line-height:1.6;color:#777}
+.v2-wa-chat-embed .wa-transcript{min-height:0!important;flex:1 1 0!important;max-height:none!important;overflow-y:auto;overscroll-behavior:contain;padding:18px clamp(16px,3.8vw,58px) 20px!important;background:#fff;scroll-behavior:smooth}
+.v2-wa-chat-embed .wa-turn{gap:11px;margin:14px 0 24px;display:flex;flex-direction:column}
+.v2-wa-chat-embed .wa-bubble{max-width:min(680px,85%);box-shadow:none;border-radius:18px;border:1px solid #eaeaea;padding:15px 18px;background:#fafafa;color:#232323}
+.v2-wa-chat-embed .wa-user{background:#f2f2f2;border-color:#f2f2f2;border-bottom-right-radius:5px;align-self:flex-end}
+.v2-wa-chat-embed .wa-agent{border-bottom-left-radius:5px;align-self:flex-start}
+.v2-wa-chat-embed .wa-bubble>span{color:#898989;font-size:11px;letter-spacing:.02em;text-transform:none}
+.v2-wa-chat-embed .wa-bubble p{font-size:14px!important;line-height:1.65;white-space:pre-wrap;overflow-wrap:anywhere}
+.v2-wa-chat-embed .wa-progress{background:#fafafa}
+.v2-wa-chat-embed .wa-composer{position:static!important;flex:none;display:flex;align-items:center;gap:12px;min-height:69px;border:1px solid #dedede;border-radius:25px;margin:0 clamp(14px,3.8vw,58px) 12px!important;padding:9px 13px 9px 20px!important;box-shadow:0 5px 25px #0000000c;background:#fff}
+.v2-wa-chat-embed .wa-composer textarea{min-height:34px!important;height:auto!important;max-height:108px!important;resize:none;flex:1;min-width:0;margin:0!important;padding:6px!important;line-height:1.45;font-size:16px!important;border:0!important;box-shadow:none!important;outline:0;background:#fff!important}
+.v2-wa-chat-embed .wa-composer>.primary{display:inline-flex!important;flex:none;align-items:center;justify-content:center;border:0;border-radius:50%;width:43px;height:43px;padding:0!important;background:#3982f6;color:#fff}
+.v2-wa-chat-embed .wa-composer>.primary::after{display:none!important;content:none!important}
+.v2-wa-chat-embed .wa-composer-hint{margin:0 16px 12px!important;font-size:11px!important;text-align:center;color:#999!important}
+.v2-wa-chat-embed .wa-approval .primary{display:inline-flex!important;align-items:center;width:auto!important;height:auto!important;padding:10px 16px!important;border-radius:11px!important;background:#171717;color:#fff;font-size:13px!important;font-weight:600}
+.v2-wa-chat-embed .wa-approval .primary::after,.v2-wa-chat-embed .wa-approval .primary+button::after{content:none!important;display:none!important}
+.v2-wa-chat-embed .wa-approval .primary+button{font-size:13px!important;width:auto!important;height:auto!important;padding:10px 15px!important;border-radius:11px!important}
+.v2-wa-chat-embed .wa-choice .wa-contact-choice{padding:11px 12px;margin:8px 0;border-radius:11px;border:1px solid #e8e8e8;background:#fff;color:#222}
+.v2-wa-chat-embed .wa-choice .wa-contact-choice:hover{background:#f6f6f6}
+.v2-wa-chat-embed .v2-wa-chats-backdrop{position:fixed;inset:0;background:#1119;z-index:200;display:flex;justify-content:flex-end;align-items:stretch}
+.v2-wa-chat-embed .v2-wa-chats-drawer{width:min(720px,96vw);height:100dvh;max-height:100dvh;display:flex;flex-direction:column;padding:0;background:#fff;box-shadow:-12px 0 45px #0002;overflow:hidden}
+.v2-wa-chat-embed .v2-wa-chats-drawer>header{padding:15px 20px;min-height:65px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #eaeaea;flex:none}
+.v2-wa-chat-embed .v2-wa-chats-drawer>header div{display:grid;gap:3px}
+.v2-wa-chat-embed .v2-wa-chats-drawer>header strong{font-size:17px}
+.v2-wa-chat-embed .v2-wa-chats-drawer>header small{font-size:12px;color:#999}
+.v2-wa-chat-embed .v2-wa-chats-drawer>header button{width:36px;height:36px;display:grid;place-items:center;border:1px solid #ddd;border-radius:50%;background:#fff;color:#444}
+.v2-wa-chat-embed .v2-wa-chats-drawer>.wa-mini{flex:1;min-height:0;max-height:none!important;width:100%;max-width:none;border:0;border-radius:0;box-shadow:none;display:flex;flex-direction:column}
+.v2-wa-chat-embed .v2-wa-chats-drawer>.wa-mini .wa-mini-body{flex:1;min-height:0;height:auto;grid-template-columns:220px minmax(0,1fr)}
+.v2-wa-chat-embed .v2-wa-chats-drawer .wa-mini-top{border-radius:0;background:#f5f8f6}
+@media(max-width:880px){.v2-wa-chat-embed .v2-wa-private-label{display:none}}
+@media(max-width:640px){
+  .v2-wa-chat-embed .wa-chat-header{padding:8px 11px!important}
+  .v2-wa-chat-embed .wa-chat-header>div:first-child{display:none}
+  .v2-wa-chat-embed .v2-wa-chat-actions{width:100%;justify-content:flex-end}
+  .v2-wa-chat-embed .wa-transcript{padding:12px 12px 15px!important}
+  .v2-wa-chat-embed .wa-bubble{max-width:95%;padding:12px}
+  .v2-wa-chat-embed .wa-composer{margin:0 8px 9px!important;padding:6px 10px!important;border-radius:20px}
+  .v2-wa-chat-embed .v2-wa-chats-drawer{width:100vw}
+  .v2-wa-chat-embed .v2-wa-chats-drawer>.wa-mini .wa-mini-body{grid-template-columns:145px minmax(0,1fr)}
+}

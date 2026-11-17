@@ -1,0 +1,38 @@
+/* Desktop landing scale matched to the supplied AgentH reference, not browser zoom. */
+@media (min-width:801px){
+  .reference-header{height:66px;padding-inline:clamp(24px,3.6vw,56px)}
+  .reference-brand{gap:10px;font-size:20px;letter-spacing:-.9px}
+  .reference-brand>span{width:34px;height:34px;border-radius:9px}
+  .reference-header nav{gap:30px;font-size:15px}
+  .reference-signin{padding:11px 21px;font-size:15px}
+  .reference-hero{max-width:1060px;padding:64px 24px 40px}
+  .online-pill{gap:7px;padding:7px 13px;font-size:10px;letter-spacing:1.5px}
+  .online-pill i{width:8px;height:8px}
+  .reference-hero h1{margin:25px auto 17px;font-size:clamp(38px,3.9vw,64px);letter-spacing:-2.8px}
+  .reference-hero p{max-width:620px;font-size:17px;line-height:1.4}
+  .reference-actions{gap:11px;margin:25px 0 15px}
+  .reference-cta{min-height:46px;padding:0 21px;font-size:14px}
+  .reference-cta b{font-size:18px}
+  .reference-disclaimer{font-size:9px;letter-spacing:1.6px}
+  .landing-media--hero{margin-top:8px;margin-bottom:58px}
+
+  .reference-auth{padding:18px}
+  .reference-auth-card{width:min(100%,460px);padding:8px 6px 18px}
+  .reference-auth-mark{width:52px;height:52px;margin-bottom:22px;border-radius:14px}
+  .reference-auth-mark i{width:14px;height:14px}
+  .reference-auth-close{width:42px;height:42px}
+  .reference-auth h1{font-size:32px;letter-spacing:-1.3px}
+  .reference-auth-card>p{margin-bottom:25px;font-size:17px}
+  .reference-google{height:60px;gap:13px;border-radius:15px!important;font-size:17px!important}
+  .reference-google b{font-size:21px}
+  .reference-divider{margin:23px 0;font-size:12px}
+  .reference-auth form label{gap:7px;margin:15px 0;font-size:14px}
+  .reference-auth input{height:58px;border-radius:15px!important;padding-inline:16px!important;font-size:17px!important}
+  .reference-password button{top:7px;right:8px;font-size:13px!important}
+  .reference-auth-submit{height:56px;margin-top:17px;border-radius:15px!important;font-size:18px!important}
+  .reference-auth-switch{margin-top:21px!important;font-size:15px!important}
+}
+
+/* Keep the install prompt out of the navigation on marketing pages. */
+body:has(.reference-landing) .web-install{top:auto!important;right:18px!important;bottom:max(18px,env(safe-area-inset-bottom))!important;z-index:100!important}
+@media(max-width:800px){body:has(.reference-landing) .web-install{right:12px!important;bottom:max(12px,env(safe-area-inset-bottom))!important}}

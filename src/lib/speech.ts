@@ -1,0 +1,2 @@
+export function speechUrl(){const url=new URL(process.env.LOCAL_SPEECH_URL||'http://localhost:8001');if(!['localhost','127.0.0.1','[::1]'].includes(url.hostname)||url.protocol!=='http:')throw new Error('Speech must use a local server.');return url.origin;}
+export function speechHeaders(){if(!process.env.LOCAL_SPEECH_TOKEN)throw new Error('Local neural speech setup required. Configure LOCAL_SPEECH_TOKEN and start the speech worker.');return {'x-agenth-token':process.env.LOCAL_SPEECH_TOKEN};}

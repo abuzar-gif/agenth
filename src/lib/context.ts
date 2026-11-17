@@ -1,0 +1,2 @@
+import type {OllamaMessage} from './ollama';
+export function fitContext(messages:OllamaMessage[],maxCharacters=5000){let remaining=maxCharacters;const selected:OllamaMessage[]=[];for(let i=messages.length-1;i>=0&&remaining>0;i--){const m=messages[i];const content=m.content.slice(-remaining);selected.unshift({...m,content});remaining-=content.length;}while(selected.length&&selected[0].role==='assistant')selected.shift();return selected;}

@@ -1,0 +1,20 @@
+.reference-auth-trigger{display:inline-flex;align-items:center;justify-content:center;font:inherit;color:inherit;cursor:pointer}
+.reference-auth-trigger.reference-signin{border:0}
+.reference-auth-modal{position:fixed;inset:0;z-index:500;display:grid;place-items:center;padding:24px;background:rgba(31,29,23,.42);backdrop-filter:blur(13px);-webkit-backdrop-filter:blur(13px);animation:reference-modal-in 160ms ease-out}
+.reference-landing:has(.reference-auth-modal)>*:not(.reference-auth-modal){filter:blur(8px);transition:filter 160ms ease}
+.reference-auth-modal>div{width:min(100%,616px);max-height:calc(100dvh - 36px);overflow:auto;border-radius:30px;box-shadow:0 28px 80px rgba(21,18,12,.28)}
+.reference-auth-modal .reference-auth{min-height:0;display:block;padding:0;background:transparent}
+.reference-auth-modal .reference-auth-card{box-sizing:border-box;width:100%;min-height:0;margin:0;padding:44px 42px 36px;border:0;border-radius:30px;background:#fff;color:#1c1b17;box-shadow:none}
+.reference-auth-modal .reference-auth-mark{width:62px;height:62px;margin-bottom:25px;border-radius:17px}
+.reference-auth-modal .reference-auth-close{top:20px;right:20px}
+.reference-auth-modal .reference-auth-card h1{font-size:36px;line-height:1.08}
+.reference-auth-modal .reference-auth-card>p{font-size:18px;margin-bottom:28px}
+.reference-auth-modal .reference-google{height:64px}
+.reference-auth-modal .reference-auth-switch{margin-top:25px!important}
+@keyframes reference-modal-in{from{opacity:0}to{opacity:1}}
+@media(max-width:640px){.reference-auth-modal{padding:12px}.reference-auth-modal>div{border-radius:24px}.reference-auth-modal .reference-auth-card{padding:34px 26px 28px;border-radius:24px}.reference-auth-modal .reference-auth-card h1{font-size:30px}.reference-auth-modal .reference-auth-mark{width:54px;height:54px;margin-bottom:21px}}
+.reference-auth-route{position:relative;min-height:100dvh;overflow:hidden;background:#f7f5ef;color:#1b1a17;font-family:Inter,Arial,sans-serif}
+.reference-auth-route-backdrop{position:absolute;inset:0;display:grid;place-items:center;overflow:hidden;filter:blur(10px);transform:scale(1.025);background:radial-gradient(circle at 50% 31%,#fff4df 0,transparent 24%),#f7f5ef}
+.reference-auth-route-backdrop:before{content:'AI agents that do all your work.';width:min(1100px,80vw);font:400 clamp(50px,7vw,110px)/.96 Georgia,'Times New Roman',serif;letter-spacing:-.065em;text-align:center;color:#1c1a16}
+.reference-auth-route .reference-auth{position:relative;z-index:1;min-height:100dvh;padding:24px;background:rgba(31,29,23,.42);backdrop-filter:blur(13px);-webkit-backdrop-filter:blur(13px)}
+.reference-auth-route .reference-auth-card{box-sizing:border-box;width:min(100%,616px);padding:44px 42px 36px;border-radius:30px;background:#fff;box-shadow:0 28px 80px rgba(21,18,12,.28)}

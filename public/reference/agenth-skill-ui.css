@@ -1,0 +1,99 @@
+
+/* AgentH V2 native profile/teaching extensions, opt-in overlays only */
+.v2ProfileTrigger{display:inline-grid;place-items:center;min-width:39px!important;width:39px;height:39px;padding:6px!important}
+.v2UIIcon{width:19px;height:19px;stroke:currentColor;stroke-linecap:round;stroke-linejoin:round;stroke-width:1.8;fill:none;vertical-align:middle}
+.v2ProfileTrigger .v2UIIcon{width:19px;height:19px}
+.v2TopClickable{cursor:pointer}
+.v2ComposeAnchor{position:relative}
+.v2ComposerDropdown{position:absolute;left:0;bottom:calc(100% + 12px);z-index:9;background:#fff;border:1px solid #eee;border-radius:17px;box-shadow:0 12px 48px #0002;width:250px;padding:8px}
+.v2ComposerDropdown button{display:flex;gap:13px;align-items:center;width:100%;padding:14px;border:0;background:transparent;color:#252525;border-radius:12px;font-size:16px;text-align:left}
+.v2ComposerDropdown button:hover{background:#f5f5f5}
+.v2ToolActions{display:flex;justify-content:flex-end;gap:4px;margin-top:10px;align-items:center}
+.v2ToolActions button{border:0;background:transparent;border-radius:9px;display:inline-grid;place-items:center;width:34px;height:32px;color:#737373}
+.v2ToolActions button:hover{background:#ececec;color:#111}
+.v2TaskBackdrop{position:fixed;inset:0;z-index:150;background:#14141462;display:flex;justify-content:flex-end;align-items:stretch}
+.v2AgentProfilePanel{height:100%;width:min(520px,100vw);max-height:100dvh;background:#fff;box-shadow:-20px 0 60px #0002;overflow:auto;color:#252525;display:flex;flex-direction:column;align-items:stretch}
+.v2ProfileActions{position:sticky;top:0;z-index:2;display:flex;gap:12px;justify-content:flex-end;background:#fff;padding:19px 24px 8px}
+.v2ProfileActions button{height:43px;width:43px;border-radius:50%;border:1px solid #e7e7e7;background:#fff;display:grid;place-items:center}
+.v2ProfileActions button:hover{background:#f7f7f7}
+.v2ProfileIdentity{display:grid;justify-items:center;gap:12px;padding:24px 20px 20px}
+.v2ProfileIdentity .bot{width:96px!important;height:96px!important;min-width:96px!important;transform:none!important}
+.v2ProfileIdentity .bot .eyes{top:25%}
+.v2ProfileIdentity .bot .eye{width:11px;height:21px}
+.v2ProfileIdentity h2{font-size:25px;margin:5px 0 0;font-weight:650}
+.v2ProfileIdentity p{color:#878787;font-size:16px;margin:0;text-align:center}
+.v2ProfileTabs{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:2px;padding:8px 23px 12px;border-bottom:1px solid #f0f0f0}
+.v2ProfileTabs button{border:1px solid transparent;background:transparent;border-radius:23px;padding:10px 0;font-size:15px;color:#777}
+.v2ProfileTabs button[aria-selected="true"]{background:#f1f1f1;color:#111;font-weight:600}
+.v2ProfileTabs button:focus-visible{outline:2px solid #3376ed}
+.v2ProfileBody{padding:26px 25px 38px;flex:1;min-height:0;overflow:auto}
+.v2ProfileBody h3{margin:0 0 12px;font-size:21px;color:#161616}
+.v2ProfileBody p{font-size:16px;color:#777;line-height:1.6;margin:10px 0 17px}
+.v2ProfileBody .v2SkillMuted{color:#8d8d8d;text-align:center}
+.v2PanelBtn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border:1px solid #ddd;padding:11px 20px;border-radius:25px;background:#fff;font-size:15px;color:#333}
+.v2PanelBtn:hover{background:#f7f7f7}
+.v2PanelBtn--highlight{color:#523ac2;border-color:#dbd4ff;background:#faf8ff}
+.v2PanelBtn--highlight:hover{background:#f3f0ff}
+.v2PanelBtn--solid{background:#191919;border-color:#191919;color:#fff}
+.v2PanelBtn--solid:hover{background:#333}
+.v2SkillEmpty{text-align:center;padding:16px 4px}
+.v2SkillEmpty h3{margin:0 0 14px}
+.v2SkillEmpty p{margin:0 0 20px}
+.v2SkillEmpty .v2SkillMuted{margin-top:44px}
+.v2SkillRow{border:1px solid #e6e6e6;border-radius:17px;margin:12px 0;padding:17px;display:grid;gap:12px}
+.v2SkillRow strong{font-size:16px;overflow-wrap:anywhere}
+.v2SkillRow small{color:#999}
+.v2SkillRow div{display:flex;flex-wrap:wrap;gap:8px}
+.v2SkillRow button{background:#fafafa;border:1px solid #eee;border-radius:20px;padding:8px 12px;font-size:13px}
+.v2SkillRow button:hover{background:#eee}
+.v2SkillDanger{color:#b44!important}
+.v2SkillMiniBrowser{border:1px solid #dadada;border-radius:16px;overflow:hidden;margin:17px 0;background:#0a0a0a}
+.v2SkillMiniChrome{height:45px;background:#f3f3f5;display:flex;gap:8px;align-items:center;padding:8px 12px}
+.v2SkillDot{display:inline-block;width:12px;height:12px;border-radius:50%;background:#ff5f57}
+.v2SkillMiniChrome .v2SkillDot:nth-child(2){background:#febc2e}
+.v2SkillMiniChrome .v2SkillDot:nth-child(3){background:#29c943}
+.v2SkillUrl{background:#fff;border-radius:9px;color:#777;padding:7px 12px;font-size:12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1}
+.v2SkillMiniBrowser img{width:100%;display:block;aspect-ratio:16/10;object-fit:contain;background:#111}
+.v2SkillSteps{margin:20px 0;padding-left:25px;color:#555;line-height:1.7}
+.v2SkillSteps li{margin:5px 0;overflow-wrap:anywhere}
+.v2TaskRecorder{position:fixed;inset:0;z-index:200;background:#141414;color:#f5f5f5;padding:0 36px 25px;display:flex;flex-direction:column;gap:12px}
+.v2RecorderTop{display:flex;align-items:center;justify-content:space-between;gap:18px;min-height:94px}
+.v2RecorderTop h2{font-size:21px;line-height:1.35;color:#f1f1f1;margin:0;font-weight:600}
+.v2RecorderActions{display:flex;gap:15px;align-items:center;flex:none}
+.v2RecorderButton{border:0;border-radius:14px;background:#ff3151;color:#fff;font-size:17px;font-weight:700;min-height:53px;padding:12px 20px}
+.v2RecorderButton:hover{background:#ef2545}
+.v2RecorderButton:disabled{opacity:.45;cursor:not-allowed}
+.v2RecorderClose{font-size:28px;color:#ccc;background:transparent;border:0;padding:8px}
+.v2RecorderNavigate{display:flex;border-radius:14px;overflow:hidden;background:#242429;border:1px solid #38383c;align-items:center}
+.v2RecorderNavigate span{font-size:22px;padding:13px 18px}
+.v2RecorderNavigate input{flex:1;min-width:0;padding:15px 12px;border:0;background:#fafafa;color:#222;font-size:16px;outline:none}
+.v2RecorderNavigate button{background:#fafafa;color:#111;border:0;padding:15px;font-size:15px}
+.v2RecorderBrowser{flex:1;min-height:0;max-width:1440px;width:100%;margin:auto;border-radius:16px;overflow:hidden;background:#000;display:flex;flex-direction:column}
+.v2RecorderChrome{height:50px;min-height:50px;background:#eaeaf0;display:flex;align-items:center;gap:12px;padding:7px 14px;color:#666}
+.v2RecorderChrome .v2SkillDot{width:15px;height:15px}
+.v2RecorderChrome .v2SkillUrl{font-size:14px}
+.v2RecorderScreen{flex:1;min-height:0;display:flex;align-items:center;justify-content:center;background:#000;position:relative;overflow:hidden}
+.v2RecorderScreen img{display:block;max-width:100%;max-height:100%;width:auto;height:auto;object-fit:contain;cursor:crosshair;user-select:none}
+.v2RecorderBusy{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);background:#171717dd;padding:13px 20px;border-radius:12px;font-size:14px}
+.v2RecorderTools{display:flex;align-items:center;justify-content:space-between;gap:15px;padding:8px 0}
+.v2RecorderType{display:flex;align-items:center;gap:8px;flex:1;min-width:0}
+.v2RecorderType input{background:#252525;color:#fff;border:1px solid #424242;border-radius:11px;padding:11px 13px;min-width:0;width:min(340px,100%)}
+.v2RecorderTools button{border:1px solid #535353;border-radius:11px;background:#242424;color:#f0f0f0;padding:10px 15px;white-space:nowrap}
+.v2RecorderTools button:hover{background:#333}
+.v2RecorderHUD{display:flex;justify-content:center;align-items:center;gap:16px}
+.v2RecorderHUD strong{background:#252525;border:1px solid #3a3a3a;border-radius:14px;padding:13px 23px;color:#f5f5f5}
+.v2RecorderHUD small{color:#aaa}
+.v2RecorderHUD button{padding:10px 16px;background:#333;border:0;border-radius:10px;color:#fff}
+.v2RecorderError{color:#ffbabc;font-size:14px;text-align:center}
+.v2RecorderStepsMini{color:#aaa;font-size:13px;text-align:center}
+@media(max-width:900px){.v2TaskRecorder{padding:0 12px 12px}.v2RecorderTop{min-height:75px}.v2RecorderTop h2{font-size:15px}.v2RecorderButton{font-size:13px;min-height:40px}.v2RecorderTools{flex-wrap:wrap}.v2RecorderBrowser{border-radius:12px}.v2ProfileBody{padding:20px 18px}}
+
+.v2RichParagraph{white-space:pre-wrap;line-height:1.65;margin:0 0 11px}
+.v2RichParagraph:last-child{margin-bottom:0}
+.v2RichList{padding-left:28px;margin:7px 0 15px}
+.v2RichList li{margin:4px 0;line-height:1.6}
+.v2RichHeading{font-size:18px;margin:13px 0 9px}
+.v2RichBreak{height:8px}
+.v2RichSuggestions{display:flex;flex-wrap:wrap;gap:8px;margin-top:15px}
+.v2RichSuggestion{border:1px solid #ddd;padding:8px 12px;border-radius:19px;background:#fff;font-size:13px;color:#444}
+.v2RichSuggestion:hover{border-color:#888;background:#f9f9f9}

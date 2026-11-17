@@ -1,0 +1,50 @@
+.shell {
+  position: fixed;
+  inset: 0;
+  overflow: hidden;
+  z-index: 50;
+  background: #fff;
+  isolation: isolate;
+}
+.frame {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 117.647059%;
+  height: 117.647059%;
+  border: 0;
+  transform: scale(0.85);
+  transform-origin: left top;
+}
+.liveLink {
+  position: absolute;
+  right: 12px;
+  bottom: 9px;
+  z-index: 1;
+  padding: 6px 11px;
+  border: 1px solid #e1e1e1;
+  border-radius: 12px;
+  background: #fff;
+  color: #666;
+  font: 11px/1.2 Arial, sans-serif;
+  text-decoration: none;
+  box-shadow: 0 1px 5px #0000000b;
+}
+.liveLink:hover, .liveLink:focus-visible {
+  color: #111;
+  border-color: #bbb;
+}
+/* The public V2 canvas already owns navigation; do not overlay a second control. */
+.liveLink { display: none; }
+@media (max-width: 1600px) {
+  .frame { width: 125%; height: 125%; transform: scale(0.8); }
+}
+@media (max-width: 1366px) {
+  .frame { width: 128.205129%; height: 128.205129%; transform: scale(0.78); }
+}
+@media (max-width: 900px) {
+  .frame { width: 125%; height: 125%; transform: scale(0.8); }
+}
+@media (max-width: 650px) {
+  .frame { width: 100%; height: 100%; transform: none; }
+}

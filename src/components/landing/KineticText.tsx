@@ -1,0 +1,4 @@
+'use client';
+import {useEffect,useState} from 'react';
+const lines=['Your ideas. A little more possible.','Your tools. In beautiful harmony.','Your intelligence. Close to home.'];
+export default function KineticText(){const [index,setIndex]=useState(0),[count,setCount]=useState(lines[0].length);useEffect(()=>{if(matchMedia('(prefers-reduced-motion: reduce)').matches)return;let current=0,position=lines[0].length,hold=0;const timer=setInterval(()=>{if(position>=lines[current].length){hold++;if(hold<110)return;hold=0;current=(current+1)%lines.length;position=0;setIndex(current);}else position++;setCount(position);},50);return()=>clearInterval(timer);},[]);return <span className="kinetic-line"><span className="sr-only">Local intelligence for your ideas and tools.</span><span aria-hidden="true">{lines[index].slice(0,count)}<i/></span></span>;}

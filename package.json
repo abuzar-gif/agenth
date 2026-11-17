@@ -1,0 +1,67 @@
+{
+  "name": "agenth",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev --hostname 127.0.0.1",
+    "build": "prisma generate && next build",
+    "start": "next start --hostname 127.0.0.1",
+    "worker": "tsx watch src/worker.ts",
+    "worker:start": "node --import tsx src/worker.ts",
+    "db:push": "prisma db push",
+    "db:generate": "prisma generate",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint .",
+    "test": "vitest run",
+    "test:e2e": "playwright test",
+    "postinstall": "prisma generate",
+    "setup": "node scripts/setup.mjs",
+    "db:local": "node scripts/local-db.mjs",
+    "db:migrate": "prisma migrate deploy",
+    "test:chatanywhere": "node --import tsx scripts/test-chatanywhere.ts"
+  },
+  "dependencies": {
+    "@auth/prisma-adapter": "^2.10.0",
+    "@elevenlabs/elevenlabs-js": "^2.78.0",
+    "@next/env": "16.4.6",
+    "@opentelemetry/api": "^1.10.0",
+    "@prisma/client": "6.19.3",
+    "@whiskeysockets/baileys": "^7.0.0-rc14",
+    "bcryptjs": "^3.0.2",
+    "cron-parser": "^5.4.0",
+    "dotenv": "^17.2.0",
+    "embedded-postgres": "^18.6.0-beta.19",
+    "lucide-react": "^1.73.0",
+    "next": "^16.0.0",
+    "next-auth": "^5.0.0-beta.32",
+    "nodemailer": "^10.5.0",
+    "pg-boss": "^12.0.0",
+    "pino": "^10.4.0",
+    "playwright": "^1.56.0",
+    "prisma": "6.19.3",
+    "qrcode": "^1.5.4",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0",
+    "tsx": "^4.20.0",
+    "zod": "^4.1.0"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.56.0",
+    "@types/node": "^24.0.0",
+    "@types/nodemailer": "^7.0.0",
+    "@types/qrcode": "^1.5.6",
+    "@types/react": "^19.2.0",
+    "@types/react-dom": "^19.2.0",
+    "eslint": "^9.0.0",
+    "eslint-config-next": "^16.0.0",
+    "typescript": "^5.9.0",
+    "vitest": "^4.0.0"
+  },
+  "overrides": {
+    "nodemailer": "$nodemailer",
+    "deepmerge-ts": "^8.0.0",
+    "@typescript-eslint/typescript-estree": {
+      "minimatch": "^11.0.1"
+    }
+  }
+}
