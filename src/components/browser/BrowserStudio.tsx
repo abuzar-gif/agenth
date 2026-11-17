@@ -1,7 +1,7 @@
 'use client';
 /* eslint-disable @next/next/no-img-element */
-import {useCallback,useEffect,useRef,useState,type FormEvent,type MouseEvent} from 'react';
-import {ArrowRight,Check,Globe2,Keyboard,LoaderCircle,MousePointer2,Save,Square,Video} from 'lucide-react';
+import {useCallback,useEffect,useRef,useState,type FormEvent,type KeyboardEvent,type MouseEvent} from 'react';
+import {ArrowRight,Check,Globe2,LoaderCircle,MousePointer2,Save,Square,Video} from 'lucide-react';
 import './browser-studio.css';
 
 type Step={action:string;description:string;selector?:string;url?:string;key?:string;placeholder?:string};
@@ -17,11 +17,12 @@ async function request(input?:Record<string,unknown>):Promise<State&{error?:stri
 }
 export default function BrowserStudio(){
  const [state,setState]=useState<State>(initial),[address,setAddress]=useState('https://www.google.com');
- const [busy,setBusy]=useState(false),[error,setError]=useState(''),[value,setValue]=useState('');
+ const [busy,setBusy]=useState(false),[error,setError]=useState('');
  const [imageUrl,setImageUrl]=useState(''),[loadingImage,setLoadingImage]=useState(false);
  const [showSkill,setShowSkill]=useState(false),[skillName,setSkillName]=useState(''),[description,setDescription]=useState(''),[steps,setSteps]=useState('');
  const [saved,setSaved]=useState('');
  const ref=useRef<HTMLImageElement>(null),revision=useRef(0);
+ const keyboardRef=useRef<HTMLTextAreaElement>(null),typingBuffer=useRef(''),typeTimer=useRef<ReturnType<typeof setTimeout>|null>(null),actionQueue=useRef<Promise<void>>(Promise.resolve());
  const refreshImage=useCallback(()=>{
   const url='/api/browser?image=1&rev='+Date.now()+'-'+(++revision.current);
   setLoadingImage(true);
@@ -36,7 +37,7 @@ export default function BrowserStudio(){
   return()=>{alive=false};
  },[refreshImage]);
  async function act(action:string,fields:Record<string,unknown>={}){
-  if(busy)return;
+  const run=async()=>{
   setBusy(true);setError('');
   try{
    const result=await request({action,...fields});setState(result);
@@ -44,13 +45,43 @@ export default function BrowserStudio(){
    if(action==='record-stop'){setSteps(result.steps.map(s=>s.description).join('\n'));setShowSkill(true);}
   }catch(caught){setError(caught instanceof Error?caught.message:'Browser action failed');}
   finally{setBusy(false);}
+  };
+  const next=actionQueue.current.then(run,run);
+  actionQueue.current=next.catch(()=>{});
+  return next;
+ }
+ function flushTyping(){
+  if(typeTimer.current){clearTimeout(typeTimer.current);typeTimer.current=null}
+  const text=typingBuffer.current;typingBuffer.current='';
+  return text?act('type',{text}):Promise.resolve();
+ }
+ function onBrowserText(event:FormEvent<HTMLTextAreaElement>){
+  typingBuffer.current+=event.currentTarget.value;
+  event.currentTarget.value='';
+  if(typeTimer.current)clearTimeout(typeTimer.current);
+  typeTimer.current=setTimeout(()=>{void flushTyping()},220);
+ }
+ function onBrowserKey(event:KeyboardEvent<HTMLTextAreaElement>){
+  if(event.key.length===1&&!event.ctrlKey&&!event.metaKey&&!event.altKey&&!event.nativeEvent.isComposing){
+   event.preventDefault();
+   typingBuffer.current+=event.key;
+   if(typeTimer.current)clearTimeout(typeTimer.current);
+   typeTimer.current=setTimeout(()=>{void flushTyping()},220);
+   return;
+  }
+  if(event.key==='Enter'){
+   event.preventDefault();void flushTyping().then(()=>act('press',{key:'Enter'}));
+  }else if(['Backspace','Tab','Escape','ArrowDown','ArrowUp'].includes(event.key)){
+   event.preventDefault();void flushTyping().then(()=>act('press',{key:event.key}));
+  }
  }
  function click(event:MouseEvent<HTMLImageElement>){
   if(busy)return;
   const rect=event.currentTarget.getBoundingClientRect();
   const x=Math.round((event.clientX-rect.left)/rect.width*1280);
   const y=Math.round((event.clientY-rect.top)/rect.height*800);
-  void act('click',{x,y});
+  keyboardRef.current?.focus({preventScroll:true});
+  void flushTyping().then(()=>act('click',{x,y}));
  }
  async function saveSkill(event:FormEvent<HTMLFormElement>){
   event.preventDefault();if(busy)return;
@@ -74,12 +105,13 @@ export default function BrowserStudio(){
   <div className="studio-browser-shell">
    <div className="studio-browser-chrome"><div className="studio-traffic"><i/><i/><i/></div><span>{state.url==='about:blank'?'New browser tab':state.url}</span><small>{busy?'Working…':loadingImage?'Updating preview…':'Live screenshot controls'}</small></div>
    <div className="studio-browser-canvas">
-    {blank?<div className="studio-blank"><Globe2 size={38}/><h3>Open a website to begin</h3><p>The real Chromium screenshot appears here. Click any visible element to interact with it.</p></div>:<img ref={ref} src={imageUrl} width={1280} height={800} onClick={click} alt="Interactive screenshot of the Chromium browser. Click the page to interact." draggable={false}/>}
+    <textarea ref={keyboardRef} aria-label="Website keyboard input" onInput={onBrowserText} onKeyDown={onBrowserKey} className="studio-browser-keyboard" autoComplete="off" autoCapitalize="off" spellCheck={false} />
+    {blank?<div className="studio-blank"><Globe2 size={38}/><h3>Open a website to begin</h3><p>Click Open Google, select its search box in the browser, then type and press Enter directly.</p><button type="button" className="studio-blank-google" onClick={()=>void act('navigate',{url:'https://www.google.com'})}>Open Google</button></div>:<img ref={ref} src={imageUrl} width={1280} height={800} onClick={click} alt="Interactive screenshot of the Chromium browser. Click the page to interact." draggable={false}/>}
     {busy&&<div className="studio-processing"><LoaderCircle size={15} className="studio-spinning"/> Running action</div>}
    </div>
   </div>
   <div className="studio-keys">
-   <div className="studio-input"><Keyboard size={18}/><input aria-label="Text to type into selected website field" placeholder="Click a field above, then type here…" value={value} onChange={e=>setValue(e.target.value)} onKeyDown={e=>{if(e.key==='Enter'){e.preventDefault();void act('type',{text:value}).then(()=>setValue(''))}}}/><button disabled={busy||!value} onClick={()=>void act('type',{text:value}).then(()=>setValue(''))}>Type</button></div>
+   <span className="studio-typing-hint">Click any field in the website above, then type on your keyboard and press Enter.</span>
    <button disabled={busy||blank} onClick={()=>void act('press',{key:'Enter'})}>Enter ↵</button>
    <button disabled={busy||blank} onClick={()=>void act('press',{key:'Tab'})}>Tab</button>
    <button disabled={busy||blank} onClick={()=>void act('scroll',{amount:520})}>Scroll ↓</button>

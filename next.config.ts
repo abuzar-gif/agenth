@@ -4,6 +4,7 @@ const config: NextConfig = { outputFileTracingRoot:process.cwd(),outputFileTraci
   { source: '/reference/agenth-dashboard.html', headers: [{key:'X-Frame-Options',value:'SAMEORIGIN'}] },
   { source: '/reference/agenth-live.html', headers: [{key:'X-Frame-Options',value:'SAMEORIGIN'}] },
   { source: '/dashboard/whatsapp-connect', headers: [{key:'X-Frame-Options',value:'SAMEORIGIN'}] },
+  { source: '/dashboard/studio', headers: [{key:'X-Frame-Options',value:'SAMEORIGIN'}] },
 ]; } };
 export default config;
 

@@ -268,8 +268,14 @@ wireAvatars=function(){
  });
 };
 function v2TeachTask(){
- window.top.location.assign('/dashboard?tab=browser');
+ if(document.getElementById('v2TeachStudio'))return;
+ v2MobileToggle(false);
+ const panel=document.createElement('section');
+ panel.id='v2TeachStudio';panel.className='v2-teach-overlay';panel.setAttribute('role','dialog');panel.setAttribute('aria-modal','true');panel.setAttribute('aria-label','Teach a Task');
+ panel.innerHTML='<header class="v2-teach-overlay-head"><span>✦ &nbsp; Teach a Task</span><button type="button" aria-label="Close Teach a Task" title="Close Teach a Task" onclick="v2CloseTeachTask()">✕</button></header><iframe title="Teach a Task Browser Studio" src="/dashboard/studio" allow="clipboard-read; clipboard-write"></iframe>';
+ document.body.append(panel);
 }
+function v2CloseTeachTask(){document.getElementById('v2TeachStudio')?.remove();}
 const v2PrevDecorate=v2MobileDecorate;
 v2MobileDecorate=function(){
  v2PrevDecorate();

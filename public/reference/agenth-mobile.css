@@ -122,3 +122,10 @@ html[data-v2-theme="dark"] .v2-teach-task{background:#303044;color:#e9dfff;borde
 html[data-v2-theme="dark"] .v2-teach-task small{color:#b5a8d1}
 @media(max-width:650px){.app.mobile-drawer-open .v2-teach-task{display:flex}.v2-teach-task{display:none}}
 @media(prefers-reduced-motion:reduce){.bot .eye,.bot.hovering .eye{animation:none!important}.bot .eyes{transition:none}}
+
+.v2-teach-overlay{position:fixed;inset:0;z-index:10020;display:flex;flex-direction:column;background:#f7f8fb;color:#1c2230;box-shadow:0 0 0 100vmax #141722aa}
+.v2-teach-overlay-head{height:58px;min-height:58px;padding:0 clamp(14px,3vw,30px);background:#fff;border-bottom:1px solid #e4e7ef;display:flex;align-items:center;justify-content:space-between;gap:16px;font-size:17px;font-weight:750}
+.v2-teach-overlay-head button{width:38px;height:38px;display:grid;place-items:center;border:1px solid #e4e5eb;border-radius:12px;background:#f5f6fa;color:#30394b;font-size:19px}
+.v2-teach-overlay-head button:hover{background:#ebeef5}
+.v2-teach-overlay iframe{width:100%;height:100%;min-height:0;flex:1;border:0;background:#f7f8fb}
+@media(max-width:650px){.v2-teach-overlay-head{height:52px;min-height:52px}.v2-teach-overlay-head button{width:35px;height:35px}}

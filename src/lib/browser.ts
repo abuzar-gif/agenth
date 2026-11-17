@@ -14,6 +14,11 @@ export async function allowedBrowserUrl(value:string){const url=new URL(value);i
 export async function browserSession(userId:string) {
   let session=sessions.get(userId);
   if(session && !session.page.isClosed()) return session;
+  if(sessions.size>=4){
+    for(const [owner,old] of sessions){
+      if(old.page.isClosed()||!await db.user.findUnique({where:{id:owner},select:{id:true}}))await old.context.close().catch(()=>{});
+    }
+  }
   if(sessions.size>=4)throw new Error('Maximum of four active browser sessions reached. Close an unused session first.');
   const browser=await chromium.launch({headless:process.env.BROWSER_HEADLESS !== 'false',args:['--disable-features=WebRtcHideLocalIpsWithMdns','--force-webrtc-ip-handling-policy=disable_non_proxied_udp']});
   let storageState:Awaited<ReturnType<BrowserContext['storageState']>>|undefined;
