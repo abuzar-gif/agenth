@@ -14,6 +14,8 @@ export function directNumberPlan(instruction:string,agentName:string){
  const phone=/(?:\+?92[\s().-]*3\d[\s().-]*\d[\s().-]*\d[\s().-]*\d[\s().-]*\d[\s().-]*\d[\s().-]*\d[\s().-]*\d[\s().-]*\d|0?3\d[\s().-]*\d[\s().-]*\d[\s().-]*\d[\s().-]*\d[\s().-]*\d[\s().-]*\d[\s().-]*\d[\s().-]*\d)/i;const match=instruction.match(phone);if(!match)return null;let number:string;try{number=normalizeWhatsAppRecipient(match[0]);}catch{return null;}let text='';const before=instruction.slice(0,match.index).replace(/^\s*(?:please\s+)?(?:message|send)\s*(?:to|on)?\s*/i,'').trim();const after=instruction.slice((match.index||0)+match[0].length).replace(/^\s*(?::|-|,|that|saying)\s*/i,'').trim();if(before&&/^(?:send|message)\b/i.test(instruction))text=before.replace(/\s+(?:to|on)$/i,'').trim();if(!text)text=after;if(!text)return null;return {summary:'Prepare one WhatsApp message for approval.',steps:[{agent:agentName,tool:'whatsapp.linked.send',args:{to:number,text},reason:'Prepare the exact WhatsApp message requested by the owner.'}]};
 }
 export function messageAfterSelectingContact(instruction:string,contactName:string,contactQuery=''){
+ const parsed=parseNamedWhatsAppMessage(instruction);
+ if(parsed)return parsed.text;
  const clean=(value:string)=>value.trim().replace(/\s+/g,' ');
  const targetText=clean(contactQuery||contactName);
  if(targetText){const escaped=targetText.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');const direct=instruction.match(new RegExp(`^\\s*(?:please\\s+)?(?:send\\s+)?message\\s+to\\s+${escaped}\\s+(.+)$`,'i'));if(direct?.[1]?.trim())return clean(direct[1]);}
@@ -33,4 +35,22 @@ export function whatsAppReply(results:{data:unknown}[]){
   const report=outputs.findLast(o=>typeof o.text==='string');if(report)return report.text;
   const contacts=outputs.find(o=>Array.isArray(o.contacts));if(contacts)return contacts.contacts.length?'I found '+contacts.contacts.map((c:any)=>c.name).join(', ')+'.':'I could not find that contact. Please provide the full number or a more specific name.';
   return 'The request finished. No message submission was confirmed.';
+}
+
+// Separate recipient identification from the exact message body. Never send the command itself.
+export function parseNamedWhatsAppMessage(instruction:string):{query:string;text:string}|null{
+ const clean=(value:string)=>value.trim().replace(/\s+/g,' ');
+ const input=clean(instruction).replace(/^(?:please|kindly)\s+/i,'').replace(/^(?:(?:mere|meri|my)\s+)?whatsapp\s+(?:pe|per|par|on)\s+/i,'').replace(/^(?:میرے|میری)\s+واٹس\s*ایپ\s+پر\s+/u,'');
+ const roman=input.match(/^(.+?)\s+ko\s+(.+?)\s+(?:(?:message|msg)\s*)?(?:bhejo|bhej\s*do|bhejdo|bhej\s*dena|send\s*karo|send\s*kro|send\s*kar\s*do|send\s*kardo|karo|kro|kar\s*do|kardo)\s*[.!؟?]*$/i);
+ const urdu=input.match(/^(.+?)\s+کو\s+(.+?)\s+(?:بھیجو|بھیج\s*دو|بھیجیں|بھیج\s*دیں|میسج\s*کرو|میسج\s*بھیجو)\s*[۔!?؟]*$/u);
+ const english=input.match(/^(?:send|message)\s+(?:a\s+)?(?:whatsapp\s+)?(?:message\s+)?to\s+(.+?)\s*(?:[:,\-]|\bthat\b|\bsaying\b)\s+(.+)$/i)
+  ||input.match(/^(?:send|message)\s+(?:a\s+)?(?:whatsapp\s+)?message\s+to\s+(.+?)\s+(?:that\s+)?says?\s+(.+)$/i);
+ const englishReverse=input.match(/^send\s+(.+?)\s+to\s+(.+?)(?:\s+on\s+whatsapp)?[.!?]*$/i);
+ const m=roman||urdu||english;
+ const query=clean(m?m[1]:(englishReverse?.[2]||''));
+ const text=clean(m?m[2]:(englishReverse?.[1]||''));
+ if(query.length<2||query.length>100||!text||text.length>4096)return null;
+ if(/^(?:send|message|bhejo|bhejdo|کو|to)$/i.test(query))return null;
+ if(/^(.+?)\s+(?:ko|کو)\s+/i.test(text))return null;
+ return {query,text};
 }

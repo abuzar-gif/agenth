@@ -37,7 +37,8 @@ test('WhatsApp linking keeps pending state during POST and clears recovered poll
     await page.getByRole('button', { name: 'Reconnect WhatsApp', exact: true }).click();
     const dialog = page.getByRole('dialog', { name: 'Connect WhatsApp', exact: true });
     await dialog.getByLabel('This is my account').check();
-    await dialog.getByRole('button', { name: 'Continue', exact: true }).click();
+    await dialog.getByRole('button', { name: 'Choose linking method', exact: true }).click();
+    await dialog.getByRole('button', { name: 'Refresh QR', exact: true }).click();
     await expect.poll(() => mutationStarted).toBe(true);
     await expect(dialog.getByText('Preparing your WhatsApp code…', { exact: true })).toBeVisible();
     // Allow the stage-change effect to run while the mutation remains in flight.

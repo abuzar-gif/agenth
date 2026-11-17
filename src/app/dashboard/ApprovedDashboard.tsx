@@ -14,6 +14,7 @@ export default function ApprovedDashboard() {
         title="AgentH V2 dashboard"
         src="/reference/agenth-live.html?embed=1"
         className={styles.frame}
+        allow="microphone; autoplay; accelerometer; gyroscope"
       />
       <a className={styles.liveLink} href="/dashboard?tab=legacy" title="Open advanced tools and connector setup">
         Advanced tools

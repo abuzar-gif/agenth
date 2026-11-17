@@ -3,7 +3,7 @@ import {db} from '@/lib/db';
 import {activeWhatsAppAgent,assertWhatsAppAgent} from '@/lib/whatsapp-agent';
 import {z} from 'zod';
 import {enqueue} from '@/lib/queue';
-import {directNumberPlan,normalizeWhatsAppRecipient,selectedContactPlan} from '@/lib/whatsapp-chat';
+import {directNumberPlan,normalizeWhatsAppRecipient,selectedContactPlan,parseNamedWhatsAppMessage} from '@/lib/whatsapp-chat';
 import {linkedContacts,rememberContactAlias,rememberedContactCommand} from '@/lib/whatsapp-runtime';
 async function followUpPlan(userId:string,agentId:string,instruction:string,agentName:string){const match=instruction.match(/^\s*(?:message|send)\s+(?:him|her|this contact)\s*[:, -]?\s*(.+)$/i);if(!match?.[1]?.trim())return null;const event=await db.event.findFirst({where:{kind:'contact_selected',task:{userId,agentId}},orderBy:{createdAt:'desc'}});const selected=event?.data as {contactId?:string}|null;if(!selected?.contactId)return null;return selectedContactPlan(selected.contactId,match[1].trim(),agentName);}
 function contactMessagePlan(query:string,text:string,agentName:string){
@@ -13,16 +13,8 @@ function contactMessagePlan(query:string,text:string,agentName:string){
  ]};
 }
 function namedMessagePlan(instruction:string,agentName:string){
- const clean=(value:string)=>value.trim().replace(/\s+/g,' ');
- const roman=instruction.match(/^\s*(.+?)\s+ko\s+(.+?)\s+(?:message\s*)?(?:karo|kro|kar\s*do|kardo|bhej\s*do|bhejdo|bhejo|bhej\s*den|send\s*karo|send\s*kro|send\s*kar\s*do|send\s*kardo)\s*$/i);
- const colon=instruction.match(/^\s*(?:please\s+)?(?:message|send)\s+(?:to\s+)?(.+?)\s*[:,-]\s*(.+)\s*$/i);
- const english=instruction.match(/^\s*(?:please\s+)?(?:send\s+)?message\s+to\s+(.+?)\s+(?:that|saying)\s+(.+)\s*$/i);
- const channel=instruction.match(/^\s*(?:please\s+)?(?:send\s+)?message\s+(?:to\s+)?(.+?)\s+(?:on\s+)?whatsapp\s*[:,\-]?\s+(.+)\s*$/i);
- const match=roman||colon||english||channel;
- if(!match)return null;
- const query=clean(match[1]),text=clean(match[2]);
- if(query.length<2||text.length<1||query.length>100||text.length>4096)return null;
- return contactMessagePlan(query,text,agentName);
+ const parsed=parseNamedWhatsAppMessage(instruction);
+ return parsed?contactMessagePlan(parsed.query,parsed.text,agentName):null;
 }
 async function plainMessagePlan(userId:string,instruction:string,agentName:string){
  const raw=instruction.match(/^\s*(?:please\s+)?(?:send\s+message|message|send)\s+(?:to\s+)?(.+?)\s*$/i)?.[1]?.trim();

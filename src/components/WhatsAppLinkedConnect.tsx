@@ -4,10 +4,11 @@ import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import { ArrowUpRight, Check, CheckCircle2, Link2, LoaderCircle, QrCode, RefreshCw, Settings2, ShieldCheck, Smartphone, Unplug, X } from 'lucide-react';
 import ToolIcon from '@/components/ToolIcon';
+import {pairingPhonePreview,whatsappPairingPhone} from '@/lib/whatsapp-link-phone';
 import './whatsapp-linked-connect.css';
 
 type Consent = { draft: boolean; chats: boolean; incoming: boolean; history: boolean; send: boolean; automatic: boolean };
-type LinkedStatus = { state: string; mode?: string; qr?: string | null; code?: string | null; error?: string | null; consent?: Consent; agent?: { id: string; name: string } | null };
+type LinkedStatus = { state: string; mode?: string; workerOnline?: boolean; qr?: string | null; code?: string | null; error?: string | null; consent?: Consent; agent?: { id: string; name: string } | null };
 
 const states: Record<string, string> = {
   checking: 'Checking connection',
@@ -27,6 +28,8 @@ export default function WhatsAppLinkedConnect({ onConnected, onOpenAgent }: { on
   const [error, setError] = useState('');
   const [pollError, setPollError] = useState('');
   const [refreshVersion, setRefreshVersion] = useState(0);
+  const [linkStartedAt, setLinkStartedAt] = useState(0);
+  const [lastPolledAt, setLastPolledAt] = useState(0);
   const [status, setStatus] = useState<LinkedStatus>({ state: 'checking' });
   const [success, setSuccess] = useState(false);
   const [consent, setConsent] = useState<Consent>({ draft: true, chats: false, incoming: false, history: false, send: false, automatic: false });
@@ -52,6 +55,7 @@ export default function WhatsAppLinkedConnect({ onConnected, onOpenAgent }: { on
         if (!response.ok) throw new Error(value.error || 'Could not check WhatsApp status.');
         if (alive && version === mutationVersion.current && !mutationPending.current) {
           setPollError('');
+          setLastPolledAt(Date.now());
           setStatus(value);
           if (value.state === 'connected' && value.agent && open && stage === 'link') {
             setOpen(false);
@@ -92,22 +96,28 @@ export default function WhatsAppLinkedConnect({ onConnected, onOpenAgent }: { on
 
   async function start(selected = mode) {
     if (mutationPending.current) return;
+    let normalizedPhone: string | undefined;
+    if (stage !== 'permissions' && selected === 'phone') {
+      try { normalizedPhone = whatsappPairingPhone(phone); }
+      catch (caught) { setError(caught instanceof Error ? caught.message : 'Invalid phone number.'); return; }
+    }
     mutationPending.current = true;
     mutationVersion.current += 1;
     pollingRequest.current?.abort();
     setBusy(true); setError(''); setPollError('');
+    if (stage !== 'permissions') setLinkStartedAt(Date.now());
     if (stage !== 'permissions') { setMode(selected); setStatus({ state: 'connecting', mode: selected }); setStage('link'); }
     try {
       const response = await fetch('/api/whatsapp/linked', {
         method: stage === 'permissions' ? 'PATCH' : 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ mode: selected, ...(selected === 'phone' ? { phone: phone.replace(/[\s()+-]/g, '') } : {}), unofficialConsent: accepted, consent }),
+        body: JSON.stringify({ mode: selected, ...(selected === 'phone' ? { phone: normalizedPhone } : {}), unofficialConsent: accepted, consent }),
       });
       const data = await response.json();
       if (!response.ok) throw new Error(data.error);
       setStatus({ ...data, mode: selected });
       if (stage === 'permissions') { setOpen(false); notify.current(); }
       else setStage('link');
-    } catch (caught) { setError(caught instanceof Error ? caught.message : 'Could not start linking.'); }
+    } catch (caught) { const message = caught instanceof Error ? caught.message : 'Could not start linking.'; setError(message); setStatus({ state: 'error', mode: selected, error: message }); }
     finally { mutationPending.current = false; setBusy(false); setRefreshVersion(previous => previous + 1); }
   }
 
@@ -127,7 +137,9 @@ export default function WhatsAppLinkedConnect({ onConnected, onOpenAgent }: { on
     finally { mutationPending.current = false; setBusy(false); setRefreshVersion(previous => previous + 1); }
   }
 
-  const waitingForCode = stage === 'link' && (busy || (status.mode === mode && ['connecting', 'reconnecting', 'qr', 'pairing'].includes(status.state) && !(mode === 'qr' ? status.qr : status.code)));
+  const workerUnavailable = status.workerOnline === false;
+  const pairingTimedOut = linkStartedAt > 0 && lastPolledAt - linkStartedAt > 60_000 && !status.code && !status.qr;
+  const waitingForCode = stage === 'link' && !workerUnavailable && !pairingTimedOut && (busy || (status.mode === mode && ['connecting', 'reconnecting', 'qr', 'pairing'].includes(status.state) && !(mode === 'qr' ? status.qr : status.code)));
   const english = language === 'en';
   const connected = status.state === 'connected' && Boolean(status.agent);
   const transitioning = ['checking', 'connecting', 'reconnecting', 'disconnecting'].includes(status.state);
@@ -171,14 +183,15 @@ export default function WhatsAppLinkedConnect({ onConnected, onOpenAgent }: { on
             <label><input type="checkbox" disabled={!consent.chats || !consent.incoming} checked={consent.history} onChange={event => setConsent({ ...consent, history: event.target.checked })} /><span><strong>Synced history</strong><small>Read available history and group information. Groups remain display-only.</small></span></label>
             <label><input type="checkbox" checked={consent.send} onChange={event => setConsent({ ...consent, send: event.target.checked })} /><span><strong>Send & reply</strong><small>Send exact messages to approved recipients after your confirmation.</small></span></label>
           </div>
-          <div className="whatsapp-link-dialog-actions"><button type="button" className="secondary-button" onClick={() => setOpen(false)}>Cancel</button><button type="button" className="primary-button" disabled={!accepted || busy} onClick={() => void start('qr')}>{busy ? <LoaderCircle className="whatsapp-linked-spin" /> : <Check />}{busy ? 'Saving…' : stage === 'permissions' ? 'Save permissions' : 'Continue'}</button></div>
+          <div className="whatsapp-link-dialog-actions"><button type="button" className="secondary-button" onClick={() => setOpen(false)}>Cancel</button><button type="button" className="primary-button" disabled={!accepted || busy} onClick={() => { if (stage === 'permissions') void start('qr'); else { setStage('link'); setMode('qr'); setStatus({ state: 'disconnected' }); } }}>{busy ? <LoaderCircle className="whatsapp-linked-spin" /> : <Check />}{busy ? 'Saving…' : stage === 'permissions' ? 'Save permissions' : 'Choose linking method'}</button></div>
         </> : <>
           <div className="whatsapp-link-segments" aria-label="Linking method"><button type="button" disabled={busy} aria-pressed={mode === 'qr'} onClick={() => setMode('qr')}><QrCode /> QR code</button><button type="button" disabled={busy} aria-pressed={mode === 'phone'} onClick={() => setMode('phone')}><Smartphone /> Phone number</button></div>
           <div className="whatsapp-link-code-area" aria-live="polite">
+            {stage === 'link' && (workerUnavailable || pairingTimedOut) && <p className="whatsapp-linked-error" role="alert">{workerUnavailable ? 'WhatsApp background worker is offline. Restart AgentH worker, then request a new code.' : 'WhatsApp did not return a code within one minute. Try Get pairing code again or switch to QR.'}</p>}
             {waitingForCode && <div className="whatsapp-link-loading" role="status"><LoaderCircle className="whatsapp-linked-spin" /><strong>{english ? 'Preparing your WhatsApp code…' : 'Aapka WhatsApp code tayyar ho raha hai…'}</strong><small>{english ? 'Keep this window open while WhatsApp responds.' : 'WhatsApp ka code aate hi yahan nazar aa jayega.'}</small></div>}
             {mode === 'phone' ? <>
-              <label className="whatsapp-phone-field">International WhatsApp number<input inputMode="tel" value={phone} onChange={event => setPhone(event.target.value)} placeholder="923001234567" /></label>
-              <button type="button" className="secondary-button" disabled={busy || !phone.trim()} onClick={() => void start('phone')}>Get pairing code</button>
+              <label className="whatsapp-phone-field">WhatsApp phone number<input inputMode="tel" autoComplete="tel" value={phone} onChange={event => setPhone(event.target.value)} placeholder="03001234567" /><small>{pairingPhonePreview(phone) ? `Detected: ${pairingPhonePreview(phone)}` : 'Pakistan: 03xx xxxxxxx or +92 3xx xxxxxxx'}</small></label>
+              <button type="button" className="secondary-button" disabled={busy || !pairingPhonePreview(phone)} onClick={() => void start('phone')}>Get pairing code</button>
               {status.mode === 'phone' && status.code && <div className="whatsapp-pairing-code" aria-label="WhatsApp pairing code">{status.code}</div>}
             </> : <>
               {status.mode === 'qr' && status.qr ? <img className="whatsapp-link-qr" src={status.qr} alt="WhatsApp linked-device QR code" /> : !waitingForCode && <p>{linkEnded ? 'This linking attempt ended. Refresh QR to start a new attempt.' : status.state === 'connected' ? 'WhatsApp confirmed the connection. Finishing agent setup…' : status.mode !== mode ? 'Choose Refresh QR to request a QR code.' : 'Waiting for WhatsApp…'}</p>}
