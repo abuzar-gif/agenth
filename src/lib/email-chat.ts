@@ -33,17 +33,24 @@ function friendlyError(error:unknown,roman:boolean){
 }
 
 export async function emailManagerReadOnlyReply(userId:string,agentName:string,input:string):Promise<string|null>{
-  if(agentName!=='Email Manager')return null;
+  // All authenticated agents can use verified Gmail read-only operations.
+  // Sending remains approval-only through the task engine.
+  void agentName;
   const normalized=input.toLowerCase();
   const asksConnection=/\b(gmail|email|mail)\b.{0,60}\b(connect|connected|authorized|linked)\b|\b(connect|connected|authorized|linked)\b.{0,60}\b(gmail|email|mail)\b/i.test(normalized);
-  const asksInbox=/\b(inbox|ibox|ibx|emails?|mails?|messages?)\b/i.test(normalized)
-    && /\b(check|show|list|read|recent|latest|new|last|dekho|dek|dikhao|dikha|bata|bta|khol|see|fetch)\b/i.test(normalized);
-  if(!asksConnection&&!asksInbox)return null;
+  const asksInbox=/\b(inbox|ibox|ibx|emails?|mails?|messages?)\b|ان\s*باکس/u.test(normalized)
+    && /\b(check|show|list|read|recent|latest|new|last|dekho|dek|dikhao|dikha|bata|bta|khol|see|fetch)\b|(?:دیکھو|دکھاؤ|پڑھو|کھولو|چیک)/iu.test(normalized);
+  const asksOpen=/\b(open|check|khol|kholo|dekho|dikhao)\b.{0,30}\b(gmail|email|mail)\b|\b(gmail|email|mail)\b.{0,30}\b(open|check|khol|kholo|dekho|dikhao)\b|(?:کھولو|دیکھو|دکھاؤ|چیک).{0,40}(?:gmail|جی\s*میل)|(?:gmail|جی\s*میل).{0,40}(?:کھولو|دیکھو|دکھاؤ|چیک)/iu.test(normalized);
+  const asksSend=/\b(send|write|draft|reply|forward|delete|archive|bhej|bhejo)\b/i.test(normalized);
+  if(!asksConnection&&!asksInbox&&!asksOpen&&!asksSend)return null;
   const roman=romanUrdu(input);
   try{
     const base='https://gmail.googleapis.com/gmail/v1/users/me';
     const profile=await googleRequest(userId,'gmail',base+'/profile') as GmailProfile;
-    if(asksConnection&&!asksInbox){
+    if(asksSend){
+      return roman?'Gmail account verified connected hai. Main yahan bina approval ke email send nahi kar sakta. Email bhejne ke liye AgentH ke To-Do / Chief task mode mein recipient, subject aur message dein; approval ke baad hi send hoga.':'Your Gmail is connected and verified. I cannot send email directly from this chat without approval. Use AgentH To-Do / Chief task mode with the recipient, subject and message; it will request approval before sending.';
+    }
+    if(asksConnection&&!asksInbox&&!asksOpen){
       return roman?`Haan, Gmail API se connection verify ho gaya hai. Connected account: ${safeField(profile.emailAddress)||'authorized Gmail account'}. Main aapki permission se inbox read kar sakta hun. Email bhejne se pehle approval zaroori hai.`
         :`Yes. Gmail API verified the connection for ${safeField(profile.emailAddress)||'your authorized Gmail account'}. I can read inbox messages you request. Sending emails requires your approval.`;
     }

@@ -21,6 +21,7 @@ export default function BrowserStudio(){
  const [imageUrl,setImageUrl]=useState(''),[loadingImage,setLoadingImage]=useState(false);
  const [showSkill,setShowSkill]=useState(false),[skillName,setSkillName]=useState(''),[description,setDescription]=useState(''),[steps,setSteps]=useState('');
  const [saved,setSaved]=useState('');
+ const [runId,setRunId]=useState<string|null>(null),[searchTerm,setSearchTerm]=useState(''),[runResult,setRunResult]=useState('');
  const ref=useRef<HTMLImageElement>(null),revision=useRef(0);
  const keyboardRef=useRef<HTMLTextAreaElement>(null),typingBuffer=useRef(''),typeTimer=useRef<ReturnType<typeof setTimeout>|null>(null),actionQueue=useRef<Promise<void>>(Promise.resolve());
  const refreshImage=useCallback(()=>{
@@ -83,6 +84,17 @@ export default function BrowserStudio(){
   keyboardRef.current?.focus({preventScroll:true});
   void flushTyping().then(()=>act('click',{x,y}));
  }
+ async function runSkill(id:string){
+  if(busy||!searchTerm.trim())return;
+  setBusy(true);setError('');setRunResult('');
+  try{
+   const response=await fetch('/api/browser/studio',{method:'POST',headers:{'Content-Type':'application/json'},credentials:'same-origin',body:JSON.stringify({action:'skill-run',skillId:id,searchTerm:searchTerm.trim()})});
+   const result=await response.json();
+   if(!response.ok)throw Error(result.error||'Skill replay failed');
+   setState(await request());refreshImage();setAddress(result.url);setRunResult('Completed: '+result.skillName+' — '+result.trace.join(' · '));setRunId(null);
+  }catch(e){setError(e instanceof Error?e.message:'Skill replay failed');}
+  finally{setBusy(false);}
+ }
  async function saveSkill(event:FormEvent<HTMLFormElement>){
   event.preventDefault();if(busy)return;
   setBusy(true);setError('');
@@ -118,6 +130,7 @@ export default function BrowserStudio(){
    <button disabled={busy||blank} onClick={()=>void act('scroll',{amount:-520})}>Scroll ↑</button>
   </div>
   {error&&<p className="studio-error" role="alert">{error}</p>}
+  {runResult&&<p className="studio-success" role="status"><Check size={17}/>{runResult}</p>}
   {saved&&<p className="studio-success" role="status"><Check size={17}/> Skill “{saved}” saved to your private library.</p>}
   <div className="studio-panels">
    <section className="studio-card"><div className="studio-card-heading"><h3><MousePointer2 size={18}/> Recorded actions</h3><span>{state.steps.length} actions</span></div>
@@ -126,7 +139,7 @@ export default function BrowserStudio(){
     {!state.recording&&state.steps.length>0&&<button className="studio-primary" onClick={()=>{setSteps(state.steps.map(x=>x.description).join('\n'));setShowSkill(true)}}>Review & save skill <ArrowRight size={16}/></button>}
    </section>
    <section className="studio-card"><div className="studio-card-heading"><h3><Save size={18}/> Saved skills</h3><span>{state.skills.length} saved</span></div>
-    {state.skills.length?<div className="studio-skill-list">{state.skills.map(skill=><article key={skill.id}><strong>{skill.name}</strong><p>{skill.description}</p><small>{skill.steps.length} steps · Saved</small><button onClick={()=>{setSkillName(skill.name);setDescription(skill.description);setSteps(skill.steps.map(x=>x.description).join('\n'));setShowSkill(true)}}>Review steps</button></article>)}</div>:<p className="studio-muted">Your reviewed skills appear here. Saved skills are instructions, not automatic background jobs.</p>}
+    {state.skills.length?<div className="studio-skill-list">{state.skills.map(skill=><article key={skill.id}><strong>{skill.name}</strong><p>{skill.description}</p><small>{skill.steps.length} steps · Saved</small><div className="studio-skill-actions"><button type="button" onClick={()=>{setRunId(skill.id);setSearchTerm('');setError('');}}>▶ Run skill</button><button type="button" onClick={()=>{setSkillName(skill.name);setDescription(skill.description);setSteps(skill.steps.map(x=>x.description).join('\n'));setShowSkill(true)}}>Review steps</button></div>{runId===skill.id&&<form className="studio-run-form" onSubmit={event=>{event.preventDefault();void runSkill(skill.id)}}><label>What should I search?<input autoFocus placeholder="e.g. artificial intelligence" maxLength={160} value={searchTerm} onChange={e=>setSearchTerm(e.target.value)} required /></label><button type="submit" disabled={busy||!searchTerm.trim()}>Run safely</button><button type="button" onClick={()=>setRunId(null)}>Cancel</button></form>}</article>)}</div>:<p className="studio-muted">Your reviewed skills appear here. Saved skills are instructions, not automatic background jobs.</p>}
    </section>
   </div>
   {showSkill&&<div className="studio-modal-backdrop"><form className="studio-review" onSubmit={saveSkill}><div className="studio-card-heading"><h3>Review the skill</h3><button type="button" onClick={()=>setShowSkill(false)}>✕</button></div><p>Check the recorded steps, edit anything, then save. Values such as <code>{'{search_term}'}</code> can be filled in each time.</p><label>Name<input required maxLength={100} placeholder="Google search for a term" value={skillName} onChange={e=>setSkillName(e.target.value)}/></label><label>What it does / when to use it<textarea rows={3} required maxLength={800} placeholder="Search Google and confirm results have loaded…" value={description} onChange={e=>setDescription(e.target.value)}/></label><label>Steps (one per line)<textarea rows={10} required value={steps} onChange={e=>setSteps(e.target.value)}/></label><small>Typed values and private credentials are not stored in recorded steps. Verify selectors and steps before reuse.</small><div className="studio-review-actions"><button type="button" onClick={()=>setShowSkill(false)}>Discard</button><button type="submit" disabled={busy}><Save size={17}/> Save skill</button></div></form></div>}

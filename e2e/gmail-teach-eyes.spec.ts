@@ -34,7 +34,8 @@ test('Gmail disconnect guidance, Teach a Task entry and more responsive agent ey
   const movement=await eye.evaluate(el=>getComputedStyle(el).getPropertyValue('--ex'));
   expect(parseFloat(movement)).toBeGreaterThan(3);
   await teach.click();
-  await expect(page).toHaveURL(/tab=browser/);
-  await expect(page.getByRole('heading',{name:'Browser & Skills'})).toBeVisible({timeout:20000});
+  await expect(page).toHaveURL(/\/dashboard$/);
+  const studio=frame.frameLocator('iframe[title="Teach a Task Browser Studio"]');
+  await expect(studio.getByRole('heading',{name:'Browser & Skills'})).toBeVisible({timeout:20000});
  }finally{if(created)await page.request.delete(origin+'/api/account',{headers:{origin},data:{confirmation:'DELETE MY ACCOUNT'}}).catch(()=>{});}
 });

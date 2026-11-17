@@ -1,4 +1,5 @@
 import {languageInstruction} from '@/lib/language';
+import {chatStudioSkill} from '@/lib/browser-studio';
 import {integrationRegistry} from '@/lib/integrations';
 import {emailManagerReadOnlyReply,gmailActionIntent,gmailNotConnectedReply} from '@/lib/email-chat';
 import {api} from '@/lib/api';
@@ -36,12 +37,14 @@ export const POST=(r:Request,{params}:{params:Promise<{id:string}>})=>api(r,asyn
     const send=(value:unknown)=>{if(!r.signal.aborted)controller.enqueue(encoder.encode(JSON.stringify(value)+'\n'));};
     try{
       send({type:'start',id:assistant.id});
-      const gmailRequested=gmailActionIntent(text);
+      const skillRequested=/^(?:run|chalao|chala\s*do)\s+/i.test(text)&&/\bskill\b/i.test(text);
+      const skillReply=skillRequested?await chatStudioSkill(userId,text):null;
+      const gmailRequested=!skillReply&&gmailActionIntent(text);
       const gmailConnection=gmailRequested?await db.connector.findUnique({where:{userId_provider:{userId,provider:'gmail'}},select:{id:true}}):null;
-      const gmailReply=gmailRequested&&!gmailConnection?gmailNotConnectedReply(text,profile?.language||'en'):await emailManagerReadOnlyReply(userId,agentName,text);
+      const gmailReply=skillReply??(gmailRequested&&!gmailConnection?gmailNotConnectedReply(text,profile?.language||'en'):gmailRequested?await emailManagerReadOnlyReply(userId,agentName,text):null);
       if(gmailReply!==null){
         full=gmailReply;
-        modelName=gmailRequested&&!gmailConnection?'connector-status':'gmail-api';
+        modelName=skillReply?'saved-skill':gmailRequested&&!gmailConnection?'connector-status':'gmail-api';
         send({type:'delta',text:full});
         send({type:'done',tokens:null,model:modelName});
       }else{
