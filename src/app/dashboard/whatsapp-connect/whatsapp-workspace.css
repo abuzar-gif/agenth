@@ -180,3 +180,28 @@ html,body{min-height:100%;margin:0}
   .v2-wa-chat-embed .v2-wa-chats-drawer{width:100vw}
   .v2-wa-chat-embed .v2-wa-chats-drawer>.wa-mini .wa-mini-body{grid-template-columns:145px minmax(0,1fr)}
 }
+
+/* WhatsApp Manager: navigable, high-contrast tabs and an accessible bilingual guide. */
+.v2-whatsapp-guide{max-width:1120px;margin:16px auto 0;padding:14px 18px;background:#f1faf5;border:1px solid #cfebd8;border-radius:16px;color:#1b4931}
+.v2-whatsapp-guide-top{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.v2-whatsapp-guide-top strong{font-size:15px;font-weight:700}
+.v2-whatsapp-guide p{margin:9px 0 0;color:#3c624d;line-height:1.55;font-size:13px;overflow-wrap:anywhere}
+.v2-whatsapp-language{display:inline-flex;gap:3px;padding:3px;border:1px solid #c2e6d1;border-radius:12px;background:#fff}
+.v2-whatsapp-language button{padding:7px 10px;border:0;border-radius:9px;background:transparent;color:#367252;font-size:12px;font-weight:600}
+.v2-whatsapp-language button[aria-pressed="true"]{color:#fff;background:#137f4b;box-shadow:0 2px 6px #137f4b25}
+.v2-whatsapp-tabs{gap:9px;padding:15px 0 17px;border-color:#e1eae4}
+.v2-whatsapp-tabs button,.v2-wa-chat-embed .v2-whatsapp-tabs button{min-height:43px;padding:10px 14px;border:1px solid #d7e6dd;border-radius:12px;background:#f8fbf9;color:#345541;font-size:13px;font-weight:600;white-space:nowrap;display:inline-flex;align-items:center;justify-content:center;gap:7px}
+.v2-whatsapp-tabs button[aria-selected="true"],.v2-wa-chat-embed .v2-whatsapp-tabs button[aria-selected="true"]{color:#fff;background:#13864b;border-color:#13864b;box-shadow:0 5px 15px #13864b25}
+.v2-whatsapp-tabs button:focus-visible,.v2-whatsapp-language button:focus-visible{outline:2px solid #197f55;outline-offset:3px}
+.v2-wa-chat-embed .v2-whatsapp-guide{margin:9px 10px 2px;padding:10px 14px;flex:none}
+.v2-wa-chat-embed .v2-whatsapp-guide p{font-size:12px;line-height:1.45}
+.v2-wa-chat-embed .v2-whatsapp-tabs{justify-content:flex-start;gap:7px;padding:10px 12px;overflow-x:auto;flex-wrap:nowrap;scrollbar-width:thin}
+.v2-wa-chat-embed .v2-whatsapp-tabs button{flex:none;min-height:41px;font-size:12px;padding:9px 12px}
+@media(max-width:660px){
+ .v2-whatsapp-guide{padding:12px;margin-top:12px}
+ .v2-whatsapp-guide p{font-size:12px}
+ .v2-whatsapp-tabs{flex-wrap:nowrap;overflow-x:auto;gap:7px;padding:11px 0 14px;scrollbar-width:thin}
+ .v2-whatsapp-tabs button{flex:none;font-size:12px;min-height:41px;padding:9px 11px}
+ .v2-wa-chat-embed .v2-whatsapp-guide{margin:5px 6px 0}
+ .v2-wa-chat-embed .v2-whatsapp-tabs{padding:9px 5px}
+}

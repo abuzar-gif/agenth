@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useEffect, useState, type FormEvent } from 'react';
+import { useCallback, useEffect, useRef, useState, type FormEvent } from 'react';
 import WhatsAppLinkedConnect from '@/components/WhatsAppLinkedConnect';
 import WhatsAppAgentPanel from '@/components/WhatsAppAgentPanel';
 import { MessageCircle, ContactRound, Bot, RefreshCw, ShieldCheck, Search, LoaderCircle, MessagesSquare } from 'lucide-react';
@@ -24,6 +24,8 @@ export default function WhatsAppConnectorWorkspace({initialTab='connection',embe
   const [searching, setSearching] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
   const [generation, setGeneration] = useState(0);
+  const [guideLanguage, setGuideLanguage] = useState<'roman-ur' | 'en'>('roman-ur');
+  const connectedOnce = useRef(false);
 
   const loadStatus = useCallback(async () => {
     try {
@@ -44,6 +46,13 @@ export default function WhatsAppConnectorWorkspace({initialTab='connection',embe
   }, [loadStatus]);
 
   useEffect(() => {
+    if (status.state === 'connected' && status.agent && !connectedOnce.current) {
+      connectedOnce.current = true;
+      setTab('agent');
+    } else if (status.state !== 'connected') connectedOnce.current = false;
+  }, [status.state, status.agent]);
+
+  useEffect(() => {
     // Old search results must never survive a disconnect or a permission removal.
     if (status.state !== 'connected' || !status.consent?.chats) {
       setResults(null);
@@ -57,6 +66,9 @@ export default function WhatsAppConnectorWorkspace({initialTab='connection',embe
     setRefreshing(false);
   }
   function onConnected() {
+    setTab('agent');
+    // Parent V2 sidebar refreshes the status from its own authenticated API.
+    if (window.parent !== window) window.parent.postMessage({ type: 'agenth:whatsapp-status-changed' }, window.location.origin);
     setGeneration(value => value + 1);
     setResults(null);
     void loadStatus();
@@ -109,11 +121,12 @@ export default function WhatsAppConnectorWorkspace({initialTab='connection',embe
           <button type="button" className="v2-whatsapp-refresh" onClick={() => void refreshStatus()} disabled={refreshing} aria-label="Refresh WhatsApp connection status"><RefreshCw size={17}/></button>
         </div>
       </header>
-      <nav className="v2-whatsapp-tabs" aria-label="WhatsApp tabs">
-        <button type="button" aria-selected={tab === 'connection'} onClick={() => setTab('connection')}><ShieldCheck size={17}/> Connect & permissions</button>
-        <button type="button" aria-selected={tab === 'contacts'} onClick={() => setTab('contacts')}><ContactRound size={17}/> Contacts</button>
-        <button type="button" aria-selected={tab === 'agent'} onClick={() => setTab('agent')}><Bot size={17}/> WhatsApp Agent</button>
-        {connected && <button type="button" aria-selected={tab === 'live'} onClick={() => setTab('live')}><MessagesSquare size={17}/> WhatsApp Live</button>}
+      <div className="v2-whatsapp-guide"><div className="v2-whatsapp-guide-top"><strong>{guideLanguage === 'roman-ur' ? 'WhatsApp kaise use karein?' : 'How to use WhatsApp Manager'}</strong><div className="v2-whatsapp-language" aria-label="Instruction language"><button type="button" aria-pressed={guideLanguage === 'roman-ur'} onClick={() => setGuideLanguage('roman-ur')}>Roman Urdu</button><button type="button" aria-pressed={guideLanguage === 'en'} onClick={() => setGuideLanguage('en')}>English</button></div></div><p>{guideLanguage === 'roman-ur' ? 'WhatsApp connect karein, phir WhatsApp Agent mein likhein: “Ali ko hello bhejo”. Agent contact dhoondega aur bhejne se pehle aapse exact message approve karwayega. Contacts mein names search karein, WhatsApp Live mein synced chats dekhein.' : 'Connect WhatsApp, then tell WhatsApp Agent “Send hello to Ali”. The agent finds the contact and asks you to approve the exact message before sending. Search names under Contacts or view synced chats in WhatsApp Live.'}</p></div>
+      <nav className="v2-whatsapp-tabs" role="tablist" aria-label="WhatsApp tabs">
+        <button type="button" role="tab" aria-selected={tab === 'connection'} onClick={() => setTab('connection')}><ShieldCheck size={17}/> Connect & permissions</button>
+        <button type="button" role="tab" aria-selected={tab === 'contacts'} onClick={() => setTab('contacts')}><ContactRound size={17}/> Contacts</button>
+        <button type="button" role="tab" aria-selected={tab === 'agent'} onClick={() => setTab('agent')}><Bot size={17}/> WhatsApp Agent</button>
+        {connected && <button type="button" role="tab" aria-selected={tab === 'live'} onClick={() => setTab('live')}><MessagesSquare size={17}/> WhatsApp Live</button>}
       </nav>
       {statusError && <p role="alert" className="v2-whatsapp-error">{statusError}</p>}
 

@@ -28,11 +28,8 @@ v2CallSubmit=async function(text){
  if(v2VoiceTask){
   if(v2VoiceTask.stage==='choose'){
    const n=String(text).trim().toLowerCase();
-   const names=['first','second','third','fourth','fifth','sixth','seventh','eighth'];
-   const roman=['pehla','dusra','teesra','chautha','panchwa','chhata','satwa','athwa'];
-   const urdu=['پہلا','دوسرا','تیسرا','چوتھا','پانچواں','چھٹا','ساتواں','آٹھواں'];
    const items=v2VoiceTask.contacts||[];
-   const at=items.findIndex((item,i)=>n===String(i+1)||n===names[i]||n===roman[i]||n===urdu[i]||n===String(item.name||'').trim().toLowerCase());
+   const at=v2VoiceContactIndex(text,items);
    if(at>=0){await v2VoiceChoose(items[at]);return}
    if(v2VoiceNegative(n)){await v2VoiceCancel();return}
    await v2CallSpeak('Please choose the correct contact by name or number, such as first or second.',v2Call.session);return;
@@ -48,7 +45,11 @@ v2CallSubmit=async function(text){
  const looksMail=/\b(?:gmail|email|e-mail)\b|(?:ای\s*میل|جی\s*میل)/i.test(command);
  const wantsSend=/\b(?:send|bhejo|bhejdo|bhej|message|mail|email)\b|(?:بھیجو|بھیجیں|بھیج\s*دو)/i.test(command);
  if(looksMail&&wantsSend){await v2VoiceEmail(command);return}
- if(looksWA&&wantsSend){await v2VoiceWhatsApp(command);return}
+ if(looksWA&&wantsSend){
+  const parsed=v2VoiceWhatsAppCommand(command);
+  if(!parsed){await v2CallSpeak('Please say the contact and exact message. For example: Open WhatsApp and message Mama hello. Nothing has been sent.',v2Call.session);return}
+  await v2VoiceWhatsApp(parsed.instruction);return
+ }
  return v2CallCoreSubmit(text);
 };
 async function v2VoiceWhatsApp(text){
@@ -140,3 +141,31 @@ async function v2VoiceCancel(){
 }
 const v2CallCoreClose=v2CallClose;
 v2CallClose=function(){v2VoiceTaskReset();v2CallCoreClose()};
+
+// Spoken commands use a deliberately narrow parser. Ambiguous wording is clarified,
+// never sent as the message body. Every resulting send still waits for owner approval.
+function v2VoiceClean(text){return String(text||'').trim().replace(/\s+/g,' ').replace(/[。।]+$/u,'').trim();}
+function v2VoiceWhatsAppCommand(text){
+ const plain=v2VoiceClean(text).replace(/^(?:hey\s+)?(?:please\s+)?(?:open|go\s+to|launch|start)\s+(?:my\s+)?whatsapp\s*(?:and|then|,)?\s*/i,'').replace(/^(?:on\s+)?whatsapp\s*(?:please\s+)?/i,'');
+ if(!plain)return null;
+ let match=plain.match(/^(?:send\s+(?:a\s+)?(?:whatsapp\s+)?message|message|text)\s+(?:to\s+)?([\p{L}\p{N}_.-]+)\s*[:,]\s*(.+)$/iu);
+ if(!match)match=plain.match(/^(?:send\s+(?:a\s+)?(?:whatsapp\s+)?message|message|text)\s+(?:to\s+)?([\p{L}\p{N}_.-]+)\s+(?:saying\s+|that\s+says\s+)?(.+)$/iu);
+ if(!match)match=plain.match(/^([\p{L}\p{N}_.-]+)\s+ko\s+(.+?)\s+(?:message\s+)?(?:bhejo|bhej\s*do|bhejdo|send\s*karo|send\s*krdo)$/iu);
+ if(!match)match=plain.match(/^([\p{L}\p{N}_.-]+)\s+کو\s+(.+?)\s+(?:بھیجو|بھیج\s*دو|بھیجیں)$/u);
+ if(!match)return null;
+ const recipient=v2VoiceClean(match[1]),body=v2VoiceClean(match[2]).replace(/\s+(?:on\s+whatsapp|please)$/i,'').trim();
+ if(!recipient||!body||recipient.length>100||body.length>4096)return null;
+ if(/^(?:to|send|message|whatsapp)$/i.test(recipient))return null;
+ if(/^(?:open\s+whatsapp|message\s+\S+\s+\S+\s+\S+\s+\S+)$/i.test(body))return null;
+ return {recipient,body,instruction:'send message to '+recipient+': '+body};
+}
+function v2VoiceContactIndex(text,contacts){
+ const clean=v2VoiceClean(text).toLowerCase().replace(/[.,!؟۔]/g,'').replace(/\s+/g,' ');
+ const wordSets=[['first','1','one','number one','pehla','pehli','پہلا','پہلی','ایک'],['second','2','two','number two','dusra','dusri','دوسرا','دوسری','دوسرے'],['third','3','three','teesra','تیسرا','تیسری'],['fourth','4','four','chautha','چوتھا'],['fifth','5','five','panchwa','پانچواں'],['sixth','6','six','chhata','چھٹا'],['seventh','7','seven','satwa','ساتواں'],['eighth','8','eight','athwa','آٹھواں']];
+ const simplified=clean.replace(/^(?:i\s+want|choose|select|pick|it's|its|the|please|mera|meri|mujhe|yeh|woh)\s+/g,'').replace(/\s+(?:one|contact|person|number|wala|wali|please|hi|hai|ko|select|choose|karo|kar\s*do)$/g,'').trim();
+ for(let i=0;i<Math.min(contacts.length,8);i++){
+  const variants=wordSets[i];
+  if(variants.some(v=>simplified===v||simplified===v+' '+v||clean===v+' '+v||clean==='the '+v+' one'))return i;
+ }
+ return contacts.findIndex(c=>clean===String(c.name||'').trim().toLowerCase()||simplified===String(c.name||'').trim().toLowerCase());
+}

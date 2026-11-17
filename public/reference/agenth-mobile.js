@@ -56,6 +56,9 @@ function v2MobileDecorate(){
 }
 const v2MobilePreviousRender=render;
 render=function(){v2MobilePreviousRender();v2MobileDecorate()};
+// Initial dashboard may finish rendering before this enhancement loads.
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',v2MobileDecorate,{once:true});
+else v2MobileDecorate();
 const v2MobilePreviousSelectAgent=selectAgent;
 selectAgent=async function(id){v2MobileDrawer=false;return v2MobilePreviousSelectAgent(id)};
 window.addEventListener('resize',()=>{if(innerWidth>650&&v2MobileDrawer)v2MobileToggle(false)});
@@ -86,18 +89,20 @@ async function v2Capture(onAudio,onFailure){
  let recorder;
  try{recorder=new MediaRecorder(stream,mime?{mimeType:mime}:undefined)}catch(err){stream.getTracks().forEach(t=>t.stop());throw err}
  const chunks=[];let stopped=false,speechStarted=false,lastSound=Date.now();
+ // Time-domain RMS detects quieter phone voices more reliably than frequency averages.
  const finish=()=>{if(!stopped&&recorder.state==='recording'){stopped=true;recorder.stop()}};
  const audioContext=window.AudioContext?new AudioContext():null;
  let analyzer=null,levels=null,timer=null;
- if(audioContext){try{const source=audioContext.createMediaStreamSource(stream);analyzer=audioContext.createAnalyser();analyzer.fftSize=512;source.connect(analyzer);levels=new Uint8Array(analyzer.frequencyBinCount)}catch{}}
+ if(audioContext){try{const source=audioContext.createMediaStreamSource(stream);analyzer=audioContext.createAnalyser();analyzer.fftSize=1024;source.connect(analyzer);levels=new Uint8Array(analyzer.fftSize)}catch{}}
  recorder.ondataavailable=e=>{if(e.data.size)chunks.push(e.data)};
  recorder.onstop=async()=>{clearInterval(timer);stream.getTracks().forEach(t=>t.stop());if(audioContext)void audioContext.close().catch(()=>{});const blob=new Blob(chunks,{type:recorder.mimeType||'audio/webm'});if(blob.size>0)try{await onAudio(blob)}catch(error){onFailure(error)}};
  recorder.onerror=e=>onFailure(e.error||Error('Recording failed'));
  recorder.start();
  const started=Date.now();
  timer=setInterval(()=>{
-  if(analyzer&&levels){analyzer.getByteFrequencyData(levels);const energy=levels.reduce((a,b)=>a+b,0)/levels.length;if(energy>13){speechStarted=true;lastSound=Date.now()}}
-  if((speechStarted&&Date.now()-lastSound>1550&&Date.now()-started>1200)||Date.now()-started>18000)finish();
+  if(analyzer&&levels){analyzer.getByteTimeDomainData(levels);let power=0;for(const sample of levels){const v=(sample-128)/128;power+=v*v}const rms=Math.sqrt(power/levels.length);if(rms>0.016){speechStarted=true;lastSound=Date.now()}}
+  // Short pauses should complete a turn; cap recording so users never wait through an 18s silence.
+  if((speechStarted&&Date.now()-lastSound>850&&Date.now()-started>800)||Date.now()-started>9500)finish();
  },150);
  return {stop:finish,cancel:()=>{recorder.onstop=()=>{clearInterval(timer);stream.getTracks().forEach(t=>t.stop());if(audioContext)void audioContext.close().catch(()=>{})};finish()}};
 }

@@ -49,6 +49,7 @@ import Voice from '@/components/voice';
 import WhatsAppLinkedConnect from '@/components/WhatsAppLinkedConnect';
 import WhatsAppAgentPanel from '@/components/WhatsAppAgentPanel';
 import ChatPanel from '@/components/chat/ChatPanel';
+import BrowserStudio from '@/components/browser/BrowserStudio';
 import AISettings from '@/components/settings/AISettings';
 import UsageSummary from '@/components/settings/UsageSummary';
 import { useOrbState } from '@/hooks/useOrbState';
@@ -678,7 +679,7 @@ export default function Dashboard({ name, email }: { name: string; email: string
       </section>
     </div>;
 
-    if (tab === 'browser') return <BrowserWorkspace browser={browser} stamp={stamp} busy={busy} tasks={tasks.filter(task => task.instruction.startsWith('Browser:'))} onAction={async (action, args) => run(async () => { const task = await request<Task>('/api/browser', 'POST', { action, ...args }); setTasks(previous => [{ ...task, events: task.events || [] }, ...previous.filter(item => item.id !== task.id)]); setNotice('Browser action queued. The preview updates after the worker captures the page.'); })} />;
+    if (tab === 'browser') return <BrowserStudio />;
 
     if (tab === 'whatsapp-agent') return <WhatsAppAgentPanel language={lang} />;
 

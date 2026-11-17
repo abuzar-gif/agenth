@@ -46,14 +46,17 @@ async function v2LoadAgents(){
 async function v2LoadTasks(){liveTasks=await v2Request('/api/tasks');if(tab==='To-Do')render()}
 async function v2LoadPersonal(){livePersonal=await v2Request('/api/personal-todos');if(tab==='To-Do')render()}
 async function v2LoadConnections(){
-  liveConnectors=await v2Request('/api/connectors');
-  const wa=await v2Request('/api/whatsapp/linked').catch(()=>null);
-  liveWhatsappState=wa?.state||'disconnected';
-  data.connections={};
-  for(const c of liveConnectors)data.connections[c.name]=!!c.connection;
-  data.connections.WhatsApp=!!liveConnectors.find(c=>c.provider==='whatsapp-business'&&c.connection)||liveWhatsappState==='connected';
-  data.connections.Gmail=!!liveConnectors.find(c=>c.provider==='gmail'&&c.connection);
-  if(modal==='connect')render();
+  const previousWhatsApp=Boolean(data.connections?.WhatsApp);
+  const previousState=liveWhatsappState;
+  const [connectors,wa]=await Promise.all([v2Request('/api/connectors'),v2Request('/api/whatsapp/linked')]);
+  liveConnectors=connectors;
+  liveWhatsappState=wa.state||'disconnected';
+  const next={};
+  for(const c of liveConnectors)next[c.name]=!!c.connection;
+  next.WhatsApp=Boolean(liveConnectors.find(c=>c.provider==='whatsapp-business'&&c.connection))||liveWhatsappState==='connected';
+  next.Gmail=Boolean(liveConnectors.find(c=>c.provider==='gmail'&&c.connection));
+  data.connections=next;
+  if(modal==='connect'||previousWhatsApp!==next.WhatsApp||previousState!==liveWhatsappState)render();
 }
 async function v2LoadConversations(){liveConversations=await v2Request('/api/conversations')}
 async function v2LoadUsage(){liveUsage=await v2Request('/api/usage');if(modal==='tokens'||settingsTab==='Usage & Billing')render()}
@@ -497,6 +500,13 @@ shareHTML=function(){return '<h2>Share this conversation</h2><p>Sharing and mult
 tokensHTML=function(){return '<h2>Token usage</h2><p>Recorded chat tokens: <strong>'+Number(liveUsage.chatTokens||0).toLocaleString()+'</strong></p><p>Recorded task tokens: <strong>'+Number(liveUsage.taskTokens||0).toLocaleString()+'</strong></p><p class="note">Server-reported usage may exclude responses without token metadata.</p><button class="outline" onclick="v2LoadUsage().catch(v2Error)">Refresh usage</button>'};
 function signOutLive(){window.top.location.assign('/api/auth/signout')}
 void v2Boot();
+// Keep the V2 connector badge in sync with real server connection state.
+setInterval(()=>{if(document.visibilityState==='visible')void v2LoadConnections().catch(()=>{});},6000);
+window.addEventListener('focus',()=>{void v2LoadConnections().catch(()=>{});});
+window.addEventListener('message',event=>{
+  if(event.origin!==location.origin||event.data?.type!=='agenth:whatsapp-status-changed')return;
+  void v2LoadConnections().catch(()=>{});
+});
 
 // The public dashboard keeps one compact WhatsApp connector row.  When it is
 // linked, that same row opens the authenticated live-chat workspace.

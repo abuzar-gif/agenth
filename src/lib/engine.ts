@@ -1,4 +1,4 @@
-import {assertWhatsAppAgent} from './whatsapp-agent';
+import {assertWhatsAppAgent,matchesWhatsAppStepAgent} from './whatsapp-agent';
 import {integrationRegistry} from './integrations';
 import { db } from './db';
 import { makePlan,model } from './model';
@@ -39,7 +39,7 @@ export async function runTask(taskId:string){
       const step={...original,args:resolveReferences(original.args,outputs) as Record<string,unknown>};validateTool(step.tool,step.args);
       const custom=await db.agent.findMany({where:{userId:task.userId}});
       const roster=scopedAgent?[scopedAgent]:[...agents,...custom.filter(a=>!a.connector)];
-      const assigned=roster.find(a=>a.name===step.agent);
+      const assigned=scopedAgent&&matchesWhatsAppStepAgent(step.agent,scopedAgent.name)?scopedAgent:roster.find(a=>a.name===step.agent);
       if(step.tool.startsWith('whatsapp')){if(!scopedAgent)throw new Error('Only the connected dedicated WhatsApp Agent can access WhatsApp.');await assertWhatsAppAgent(task.userId,scopedAgent.id,step.tool);}
       if(!assigned?.permissions.includes(step.tool))throw new Error(`${step.agent} does not have permission for ${step.tool}.`);
       const customAssigned=custom.find(agent=>agent.name===step.agent);

@@ -1,9 +1,17 @@
 import {beforeEach,describe,it,expect,vi} from 'vitest';
 const mocks=vi.hoisted(()=>({agent:{findUnique:vi.fn(),findFirst:vi.fn(),upsert:vi.fn(),deleteMany:vi.fn()},whatsAppSession:{findUnique:vi.fn(),findUniqueOrThrow:vi.fn()},connector:{findUnique:vi.fn()},whatsAppSend:{findUnique:vi.fn(),create:vi.fn(),update:vi.fn(),updateMany:vi.fn()}}));
 vi.mock('../src/lib/db',()=>({db:mocks}));
-import {ensureWhatsAppAgent,assertWhatsAppAgent,outgoingOnce} from '../src/lib/whatsapp-agent';
+import {ensureWhatsAppAgent,assertWhatsAppAgent,outgoingOnce,matchesWhatsAppStepAgent} from '../src/lib/whatsapp-agent';
 import {encrypt} from '../src/lib/security';
 beforeEach(()=>{vi.resetAllMocks();mocks.whatsAppSession.findUnique.mockResolvedValue(null);mocks.whatsAppSend.findUnique.mockResolvedValue(null);mocks.whatsAppSend.create.mockResolvedValue({});mocks.whatsAppSend.update.mockResolvedValue({});mocks.whatsAppSend.updateMany.mockResolvedValue({count:1});});
+describe('WhatsApp legacy task agent names',()=>{
+ it('resolves historical WhatsApp Agent tasks to the current WhatsApp Manager',()=>{
+  expect(matchesWhatsAppStepAgent('WhatsApp Agent','WhatsApp Manager')).toBe(true);
+  expect(matchesWhatsAppStepAgent('WhatsApp Manager','WhatsApp Manager')).toBe(true);
+  expect(matchesWhatsAppStepAgent('Chief','WhatsApp Manager')).toBe(false);
+  expect(matchesWhatsAppStepAgent('Email Manager','WhatsApp Manager')).toBe(false);
+ });
+});
 describe('dedicated WhatsApp Agent isolation',()=>{
  it('permits contact lookup without granting incoming messages or sends',async()=>{const session={state:'connected',heartbeat:new Date(),consent:{send:false,chats:true,incoming:false}};mocks.whatsAppSession.findUnique.mockResolvedValue(session);mocks.whatsAppSession.findUniqueOrThrow.mockResolvedValue(session);mocks.agent.upsert.mockImplementation(async({create}:any)=>create);const agent=await ensureWhatsAppAgent('owner','whatsapp-linked');expect(agent.permissions).toContain('whatsapp.linked.contacts');expect(agent.permissions).not.toContain('whatsapp.linked.messages');expect(agent.permissions).not.toContain('whatsapp.linked.send');});
  it('does not create an agent for an unpaired QR session',async()=>{mocks.whatsAppSession.findUnique.mockResolvedValue({state:'qr',heartbeat:new Date()});await expect(ensureWhatsAppAgent('u','whatsapp-linked')).rejects.toThrow('genuinely connected');expect(mocks.agent.upsert).not.toHaveBeenCalled();});

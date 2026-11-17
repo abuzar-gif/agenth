@@ -40,11 +40,12 @@ export function whatsAppReply(results:{data:unknown}[]){
 // Separate recipient identification from the exact message body. Never send the command itself.
 export function parseNamedWhatsAppMessage(instruction:string):{query:string;text:string}|null{
  const clean=(value:string)=>value.trim().replace(/\s+/g,' ');
- const input=clean(instruction).replace(/^(?:please|kindly)\s+/i,'').replace(/^(?:(?:mere|meri|my)\s+)?whatsapp\s+(?:pe|per|par|on)\s+/i,'').replace(/^(?:میرے|میری)\s+واٹس\s*ایپ\s+پر\s+/u,'');
+ const input=clean(instruction).replace(/^(?:please|kindly)\s+/i,'').replace(/^(?:(?:open|launch|start|go\s+to)\s+(?:my\s+)?whatsapp\s*(?:(?:and|then)\s+)?)/i,'').replace(/^(?:(?:mere|meri|my)\s+)?whatsapp\s+(?:pe|per|par|on)\s+/i,'').replace(/^(?:میرے|میری)\s+واٹس\s*ایپ\s+پر\s+/u,'');
  const roman=input.match(/^(.+?)\s+ko\s+(.+?)\s+(?:(?:message|msg)\s*)?(?:bhejo|bhej\s*do|bhejdo|bhej\s*dena|send\s*karo|send\s*kro|send\s*kar\s*do|send\s*kardo|karo|kro|kar\s*do|kardo)\s*[.!؟?]*$/i);
  const urdu=input.match(/^(.+?)\s+کو\s+(.+?)\s+(?:بھیجو|بھیج\s*دو|بھیجیں|بھیج\s*دیں|میسج\s*کرو|میسج\s*بھیجو)\s*[۔!?؟]*$/u);
  const english=input.match(/^(?:send|message)\s+(?:a\s+)?(?:whatsapp\s+)?(?:message\s+)?to\s+(.+?)\s*(?:[:,\-]|\bthat\b|\bsaying\b)\s+(.+)$/i)
-  ||input.match(/^(?:send|message)\s+(?:a\s+)?(?:whatsapp\s+)?message\s+to\s+(.+?)\s+(?:that\s+)?says?\s+(.+)$/i);
+  ||input.match(/^(?:send|message)\s+(?:a\s+)?(?:whatsapp\s+)?message\s+to\s+(.+?)\s+(?:that\s+)?says?\s+(.+)$/i)
+  ||input.match(/^(?:message|text)\s+([\p{L}\p{N}_.-]+)\s*[:,]\s*(.+)$/iu);
  const englishReverse=input.match(/^send\s+(.+?)\s+to\s+(.+?)(?:\s+on\s+whatsapp)?[.!?]*$/i);
  const m=roman||urdu||english;
  const query=clean(m?m[1]:(englishReverse?.[2]||''));
