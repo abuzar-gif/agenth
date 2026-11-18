@@ -46,6 +46,7 @@ v2CallSubmit=async function(text){
  const wantsSend=/\b(?:send|bhejo|bhejdo|bhej|message|mail|email)\b|(?:بھیجو|بھیجیں|بھیج\s*دو)/i.test(command);
  if(looksMail&&wantsSend){await v2VoiceEmail(command);return}
  if(looksWA&&wantsSend){
+  if(v2Call.agent?.name==='Dost'){await v2CallSpeak('Dost is a conversation-only companion. Open Chief or another task agent to send a WhatsApp message.',v2Call.session);return;}
   const parsed=v2VoiceWhatsAppCommand(command);
   if(!parsed){await v2CallSpeak('Please say the contact and exact message. For example: Open WhatsApp and message Mama hello. Nothing has been sent.',v2Call.session);return}
   await v2VoiceWhatsApp(parsed.instruction);return
@@ -54,13 +55,20 @@ v2CallSubmit=async function(text){
 };
 async function v2VoiceWhatsApp(text){
  const session=v2Call.session;
- v2CallPhase('thinking','Finding the contact through the connected WhatsApp Agent…');
+ v2CallPhase('thinking','Checking your WhatsApp connection…');
  try{
+  const connection=await v2Request('/api/whatsapp/linked');
+  if(connection.state!=='connected'||!connection.agent){
+   const instruction=/[\u0600-\u06ff]/.test(text)?'آپ کا WhatsApp ابھی کنیکٹ نہیں ہے۔ براہِ کرم Connected Apps میں جا کر WhatsApp کنیکٹ کریں، پھر مجھے کمانڈ دیں۔ شکریہ!':/\b(ko|bhejo|bhejdo|karo|kro|mera|meri)\b/i.test(text)?'Aapka WhatsApp connected nahi hai. Pehle Connected Apps mein WhatsApp connect karein, phir mujhe command dein. Shukriya!':"I can't send messages on WhatsApp while WhatsApp is not connected. Please connect WhatsApp in Connected Apps, then use me. Thank you.";
+   await v2CallSpeak(instruction,session);return;
+  }
+  if(connection.consent?.send===false){await v2CallSpeak('WhatsApp is connected but Send permission is off. Please enable sending in Connected Apps, then ask me again.',session);return;}
+  v2CallPhase('thinking','Finding your WhatsApp contact…');
   const reply=await v2Request('/api/whatsapp/agent','POST',{instruction:text});
   if(!reply.id)throw Error('WhatsApp did not create a task.');
   v2VoiceTask={taskId:reply.id,kind:'whatsapp',stage:'waiting',session};
   await v2VoiceWait();
- }catch(error){if(v2Call.open&&session===v2Call.session){v2VoiceTaskReset();v2CallPhase('error',error.message||'WhatsApp task could not start. Nothing was sent.');}}
+ }catch(error){if(v2Call.open&&session===v2Call.session){v2VoiceTaskReset();await v2CallSpeak('I could not prepare the WhatsApp request. Nothing was sent. Please check your connection and try again.',session);}}
 }
 async function v2VoiceEmail(text){
  const session=v2Call.session;

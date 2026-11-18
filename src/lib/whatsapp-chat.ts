@@ -45,7 +45,8 @@ export function parseNamedWhatsAppMessage(instruction:string):{query:string;text
  const urdu=input.match(/^(.+?)\s+کو\s+(.+?)\s+(?:بھیجو|بھیج\s*دو|بھیجیں|بھیج\s*دیں|میسج\s*کرو|میسج\s*بھیجو)\s*[۔!?؟]*$/u);
  const english=input.match(/^(?:send|message)\s+(?:a\s+)?(?:whatsapp\s+)?(?:message\s+)?to\s+(.+?)\s*(?:[:,\-]|\bthat\b|\bsaying\b)\s+(.+)$/i)
   ||input.match(/^(?:send|message)\s+(?:a\s+)?(?:whatsapp\s+)?message\s+to\s+(.+?)\s+(?:that\s+)?says?\s+(.+)$/i)
-  ||input.match(/^(?:message|text)\s+([\p{L}\p{N}_.-]+)\s*[:,]\s*(.+)$/iu);
+  ||input.match(/^(?:message|text)\s+(?:to\s+)?([\p{L}\p{N}_.-]+)\s*[:,]\s*(.+)$/iu)
+  ||input.match(/^(?:send\s+(?:a\s+)?(?:whatsapp\s+)?message\s+to|message\s+(?:to\s+)?|text\s+(?:to\s+)?)\s*([\p{L}\p{N}_.-]+)\s+([\p{L}\p{N}_.,!?-]+)$/iu);
  const englishReverse=input.match(/^send\s+(.+?)\s+to\s+(.+?)(?:\s+on\s+whatsapp)?[.!?]*$/i);
  const m=roman||urdu||english;
  const query=clean(m?m[1]:(englishReverse?.[2]||''));
@@ -54,4 +55,19 @@ export function parseNamedWhatsAppMessage(instruction:string):{query:string;text
  if(/^(?:send|message|bhejo|bhejdo|کو|to)$/i.test(query))return null;
  if(/^(.+?)\s+(?:ko|کو)\s+/i.test(text))return null;
  return {query,text};
+}
+
+/** Explicit cross-agent WhatsApp request; never route generic chat to WhatsApp. */
+export function whatsAppActionIntent(input:string){
+ const text=input.trim();
+ const channel=/\bwhats\s*app\b|\bwa\b|واٹس\s*ایپ/iu.test(text);
+ const action=/\b(send|message|text|bhejo|bhejdo|bhej|karo|kro|reply|forward|check|read|show|open|dekho|dikhao|kholo)\b|(?:بھیجو|بھیجیں|بھیج|میسج|دیکھو|دکھاؤ|کھولو)/iu.test(text);
+ return channel&&action;
+}
+export function whatsAppNotConnectedReply(input:string,language='en'){
+ const urdu=/[\u0600-\u06ff]/u.test(input)||language==='ur';
+ const roman=/\b(mujhe|mera|meri|ko|bhejo|bhej|karo|kro|hai|kar|yaar|nahi|nhi|pe|par)\b/i.test(input)||language==='roman-ur';
+ if(urdu)return 'آپ کا WhatsApp ابھی کنیکٹ نہیں ہے۔ WhatsApp کنیکٹ ہونے تک میں اس پر میسج نہیں بھیج سکتی۔ براہِ کرم AgentH کے Connected Apps میں جا کر WhatsApp کنیکٹ کریں، پھر مجھے دوبارہ کمانڈ دیں۔ شکریہ!';
+ if(roman)return 'Aapka WhatsApp abhi connected nahi hai. Jab tak WhatsApp connect nahi hota, main WhatsApp par message nahi bhej sakti. Kindly AgentH ke Connected Apps mein WhatsApp connect karein, phir mujhe command dein. Shukriya!';
+ return "I can't send messages on WhatsApp while WhatsApp is not connected. Please open Connected Apps, connect WhatsApp, then give me your command again. Thank you.";
 }
