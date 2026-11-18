@@ -59,7 +59,9 @@ async function launchServer(url){
  if(await listening(3001))throw Error('Port 3001 already occupied. Stop the previous production server to apply the new tunnel URL.');
  server=service('production',['scripts/start-public-next.cjs']);
  if(!await until(()=>listening(3001),35000))throw Error('Production Next.js did not start.');
- if(!await until(async()=>{try{const r=await fetch('http://127.0.0.1:3001/login',{signal:AbortSignal.timeout(4000)});return r.ok();}catch{return false;}},20000))throw Error('Production health check failed.');
+ // Port is the startup gate; an intermittently slow first HTTP request should not
+ // tear down a healthy production server and endlessly rotate public URLs.
+ if(!await until(async()=>{try{const r=await fetch('http://127.0.0.1:3001/login',{signal:AbortSignal.timeout(12000)});return r.ok();}catch{return false;}},45000)) log('PRODUCTION_HTTP_WARMUP_PENDING','The server remains running; check public smoke test.');
  log('PUBLIC_LINK_READY',url,'(also on Desktop: AgentH Public Link.txt)');
 }
 async function relaunch(){
